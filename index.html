@@ -221,13 +221,13 @@
 
         .form-row-inline {
             display: grid;
-            grid-template-columns: 130px 1fr;
+            grid-template-columns: 130px minmax(0, 1fr);
             gap: 10px;
         }
 
         /* Campo data (Tipologia Evento) */
         .date-field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-        .date-single { display: flex; flex-direction: column; gap: 8px; }
+        .date-single { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 
         /* Il picker deve mostrare l'icona nativa del calendario */
         .form-group input[type="date"] {
@@ -563,7 +563,7 @@
 
 <div class="container">
     <header class="site">
-        <span class="brandline"><span class="dot"></span>SMS di RIFREDI</span>
+        <span class="brandline"><span class="dot"></span>SMS di RIFREDI 1883</span>
         <h1>GESTIONE EVENTI<br>e PROPOSTE</h1>
         <p class="sub">Piattaforma interna per proporre, valutare e coordinare le attività del Circolo.</p>
     </header>
@@ -574,7 +574,7 @@
         <div class="compose-col">
             <div class="card compose open" id="composeCard">
                 <button type="button" class="compose__toggle" id="composeToggle" aria-expanded="true">
-                    <span>Nuova proposta</span>
+                    <span>NUOVA PROPOSTA</span>
                     <span class="plus" aria-hidden="true">+</span>
                 </button>
 
@@ -582,7 +582,7 @@
                     <form id="proposalForm">
                         <div class="form-group">
                             <label for="proposer">Propositore / Referente</label>
-                            <input type="text" id="proposer" required placeholder="Nome e Cognome">
+                            <input type="text" id="proposer" required placeholder="Nome e cognome">
                         </div>
 
                         <div class="form-group">
