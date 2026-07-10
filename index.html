@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Eventi - Circolo SMS</title>
+    <style>
+        :root {
+            --primary: #2b579a;
+            --secondary: #eff4f9;
+            --dark: #333333;
+            --success: #28a745;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --gray: #6c757d;
+            --light: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            color: var(--dark);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        header h1 {
+            color: var(--primary);
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        header p {
+            color: var(--gray);
+            margin: 5px 0 0 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        @media (min-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr 2fr;
+            }
+        }
+
+        .card {
+            background: var(--light);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: var(--primary);
+            font-size: 1.5rem;
+            border-bottom: 1px solid var(--secondary);
+            padding-bottom: 10px;
+        }
+
+        /* Form di inserimento */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .form-row-inline {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 10px;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #1e3d6b;
+        }
+
+        button:disabled {
+            background-color: var(--gray);
+            cursor: not-allowed;
+        }
+
+        /* Tabella Proposte */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background-color: var(--secondary);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Badge di Stato */
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .badge-idea { background-color: #e2e3e5; color: #383d41; }
+        .badge-approvata { background-color: #cce5ff; color: #004085; }
+        .badge-working { background-color: #fff3cd; color: #856404; }
+        .badge-pianificata { background-color: #d4edda; color: #155724; }
+
+        .btn-delete {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: underline;
+            padding: 0;
+            width: auto;
+        }
+        
+        .btn-delete:hover {
+            color: #bd2130;
+            background: none;
+        }
+
+        .loading-overlay {
+            display: none;
+            color: var(--primary);
+            font-weight: bold;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Gestione Eventi SMS</h1>
+        <p>Piattaforma interna per il coordinamento delle attività e delle proposte del Circolo</p>
+    </header>
+
+    <div class="grid">
+        <div class="card">
+            <h2>Nuova Proposta</h2>
+            <form id="proposalForm">
+                <div class="form-group">
+                    <label for="proposer">Propositore / Referente</label>
+                    <input type="text" id="proposer" required placeholder="Nome e Cognome">
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Descrizione dell'Evento</label>
+                    <textarea id="description" rows="4" required placeholder="Descrivi l'idea, il tipo di attività, ecc..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Tipologia Data</label>
+                    <div class="form-row-inline">
+                        <select id="dateType" onchange="toggleDateInput()">
+                            <option value="Singolo">Singolo</option>
+                            <option value="Ricorrente">Ricorrente</option>
+                        </select>
+                        <input type="text" id="dateDetails" required placeholder="es. 15 Ottobre">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="status">Stato Iniziale</label>
+                    <select id="status">
+                        <option value="Idea">Idea</option>
+                        <option value="Approvata dal consiglio">Approvata dal consiglio</option>
+                        <option value="Working progress">Working progress</option>
+                        <option value="Pianificata">Pianificata</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="submitBtn">Aggiungi Proposta</button>
+                <div id="formLoading" class="loading-overlay">Salvataggio in corso...</div>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Registro delle Proposte</h2>
+            <div id="tableLoading" style="text-align: center; color: var(--primary); font-weight: bold; padding: 20px;">
+                Caricamento dati dal server...
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Propositore</th>
+                            <th>Descrizione</th>
+                            <th>Data / Ricorrenza</th>
+                            <th>Stato</th>
+                            <th>Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody id="proposalTableBody">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+   // Sostituisci questa stringa con l'URL ottenuto dalla pubblicazione dell'Apps Script
+   const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxmSeOpmtrrAbD8gEBf1-Am1BVHc1tCW4mywwCZG-NhiGNZMCmK9EkpN4gPvIJRais9/exec';
+   let proposals = [];
+   const form = document.getElementById('proposalForm');
+   const tableBody = document.getElementById('proposalTableBody');
+   const submitBtn = document.getElementById('submitBtn');
+   const formLoading = document.getElementById('formLoading');
+   const tableLoading = document.getElementById('tableLoading');
+   // Funzione GET per scaricare i dati
+   async function fetchProposals() {
+       tableLoading.style.display = 'block';
+       try {
+           const response = await fetch(WEB_APP_URL);
+           proposals = await response.json();
+           renderProposals();
+       } catch (error) {
+           console.error("Errore nel caricamento:", error);
+           tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">Errore di connessione in lettura.</td></tr>`;
+       } finally {
+           tableLoading.style.display = 'none';
+       }
+   }
+   // Funzione di rendering tabella
+   function renderProposals() {
+       tableBody.innerHTML = '';
+       if (proposals.length === 0) {
+           tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:gray;">Nessuna proposta registrata.</td></tr>`;
+           return;
+       }
+       proposals.forEach((p) => {
+           let badgeClass = 'badge-idea';
+           if (p.status === 'Approvata dal consiglio') badgeClass = 'badge-approvata';
+           if (p.status === 'Working progress') badgeClass = 'badge-working';
+           if (p.status === 'Pianificata') badgeClass = 'badge-pianificata';
+           const row = document.createElement('tr');
+           row.innerHTML = `
+<td><strong>${escapeHTML(String(p.proposer))}</strong></td>
+<td>${escapeHTML(String(p.description))}</td>
+<td><small>(${p.dateType})</small><br>${escapeHTML(String(p.dateDetails))}</td>
+<td>
+<select onchange="updateStatus('${p.id}', this.value)" style="padding: 2px; border-radius:4px;">
+<option value="Idea" ${p.status === 'Idea' ? 'selected' : ''}>Idea</option>
+<option value="Approvata dal consiglio" ${p.status === 'Approvata dal consiglio' ? 'selected' : ''}>Approvata dal consiglio</option>
+<option value="Working progress" ${p.status === 'Working progress' ? 'selected' : ''}>Working progress</option>
+<option value="Pianificata" ${p.status === 'Pianificata' ? 'selected' : ''}>Pianificata</option>
+</select>
+<br><span class="badge ${badgeClass}" style="margin-top: 5px;">${p.status}</span>
+</td>
+<td>
+<button class="btn-delete" onclick="deleteProposal('${p.id}')">Elimina</button>
+</td>
+           `;
+           tableBody.appendChild(row);
+       });
+   }
+   // Gestione invio modulo (POST in modalità no-cors)
+   form.addEventListener('submit', async function(e) {
+       e.preventDefault();
+       submitBtn.disabled = true;
+       formLoading.style.display = 'block';
+       const payload = {
+           action: 'create',
+           proposer: document.getElementById('proposer').value,
+           description: document.getElementById('description').value,
+           dateType: document.getElementById('dateType').value,
+           dateDetails: document.getElementById('dateDetails').value,
+           status: document.getElementById('status').value
+       };
+       try {
+           await fetch(WEB_APP_URL, {
+               method: 'POST',
+               mode: 'no-cors', // Questo evita l'errore di lettura del redirect 302
+               headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+               body: JSON.stringify(payload)
+           });
+           form.reset();
+           document.getElementById('dateType').value = 'Singolo';
+           // Diamogli mezzo secondo di respiro per dare tempo a Google di scrivere la riga
+           setTimeout(fetchProposals, 500);
+       } catch (error) {
+           console.error("Errore invisibile:", error);
+       } finally {
+           submitBtn.disabled = false;
+           formLoading.style.display = 'none';
+       }
+   });
+   // Cambia stato (POST in modalità no-cors)
+   async function updateStatus(id, newStatus) {
+       tableLoading.style.display = 'block';
+       try {
+           await fetch(WEB_APP_URL, {
+               method: 'POST',
+               mode: 'no-cors',
+               headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+               body: JSON.stringify({ action: 'update', id: id, status: newStatus })
+           });
+           setTimeout(fetchProposals, 500);
+       } catch (error) {
+           console.error(error);
+           tableLoading.style.display = 'none';
+       }
+   }
+   // Elimina proposta (POST in modalità no-cors)
+   async function deleteProposal(id) {
+       if (confirm("Sei sicuro di voler eliminare questa proposta dal database?")) {
+           tableLoading.style.display = 'block';
+           try {
+               await fetch(WEB_APP_URL, {
+                   method: 'POST',
+                   mode: 'no-cors',
+                   headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                   body: JSON.stringify({ action: 'delete', id: id })
+               });
+               setTimeout(fetchProposals, 500);
+           } catch (error) {
+               console.error(error);
+               tableLoading.style.display = 'none';
+           }
+       }
+   }
+   function escapeHTML(str) {
+       if (str === "undefined" || str === null) return "";
+       return String(str).replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+   }
+   function toggleDateInput() {
+       const type = document.getElementById('dateType').value;
+       const input = document.getElementById('dateDetails');
+       if (type === 'Singolo') input.placeholder = "es. 15 Ottobre";
+       else input.placeholder = "es. Ogni terzo venerdì del mese";
+   }
+   // Avvio iniziale
+   if (WEB_APP_URL !== 'INCOLLA_QUI_IL_TUO_URL_DI_APPS_SCRIPT') fetchProposals();
+</script>
+
+</body>
+</html>
