@@ -26,6 +26,7 @@
             --appr-bg: #dde8fb;     --appr-fg: #1c4fa8;
             --work-bg: #fdeecd;     --work-fg: #9a6410;
             --plan-bg: #d8efdd;     --plan-fg: #1c6b39;
+            --done-bg: #d5dde0;     --done-fg: #3a4c52;
 
             --radius: 18px;
             --radius-sm: 12px;
@@ -356,6 +357,7 @@
         .badge-approvata   { background: var(--appr-bg); color: var(--appr-fg); }
         .badge-working     { background: var(--work-bg); color: var(--work-fg); }
         .badge-pianificata { background: var(--plan-bg); color: var(--plan-fg); }
+        .badge-conclusa    { background: var(--done-bg); color: var(--done-fg); }
 
         .proposal__desc {
             margin: 0 0 16px;
@@ -493,7 +495,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="description">Descrizione dell'evento</label>
+                            <label for="description">Descrizione dell'Evento</label>
                             <textarea id="description" rows="4" required placeholder="Racconta l'idea, il tipo di attività, il luogo…"></textarea>
                         </div>
 
@@ -509,12 +511,13 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="status">Stato proposta</label>
+                            <label for="status">Stato Proposta</label>
                             <select id="status" class="select-native">
                                 <option value="Idea">Idea</option>
                                 <option value="Approvata dal consiglio">Approvata dal consiglio</option>
                                 <option value="Working progress">Working progress</option>
                                 <option value="Pianificata">Pianificata</option>
+                                <option value="Conclusa">Conclusa</option>
                             </select>
                         </div>
 
@@ -528,7 +531,7 @@
         <!-- Colonna lista -->
         <div class="list-col">
             <div class="section-title">
-                <h2>Registro delle proposte</h2>
+                <h2>REGISTRO DELLE PROPOSTE</h2>
                 <span class="counter" id="counter">—</span>
             </div>
 
@@ -538,6 +541,7 @@
                 <button class="chip" data-filter="Approvata dal consiglio">Approvate</button>
                 <button class="chip" data-filter="Working progress">In lavorazione</button>
                 <button class="chip" data-filter="Pianificata">Pianificate</button>
+                <button class="chip" data-filter="Conclusa">Concluse</button>
             </div>
 
             <div id="tableLoading" class="list-loading">Caricamento dati dal server…</div>
@@ -598,6 +602,7 @@
         if (status === 'Approvata dal consiglio') return 'badge-approvata';
         if (status === 'Working progress') return 'badge-working';
         if (status === 'Pianificata') return 'badge-pianificata';
+        if (status === 'Conclusa') return 'badge-conclusa';
         return 'badge-idea';
     }
 
@@ -652,6 +657,7 @@
                         <option value="Approvata dal consiglio" ${p.status === 'Approvata dal consiglio' ? 'selected' : ''}>Approvata dal consiglio</option>
                         <option value="Working progress" ${p.status === 'Working progress' ? 'selected' : ''}>Working progress</option>
                         <option value="Pianificata" ${p.status === 'Pianificata' ? 'selected' : ''}>Pianificata</option>
+                        <option value="Conclusa" ${p.status === 'Conclusa' ? 'selected' : ''}>Conclusa</option>
                     </select>
                     <button class="btn-delete" onclick="deleteProposal('${p.id}')">Elimina</button>
                 </div>
