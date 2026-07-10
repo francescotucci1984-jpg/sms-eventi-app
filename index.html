@@ -2,395 +2,723 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestione Eventi - Circolo SMS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#155e63">
+    <title>Gestione Eventi · Circolo SMS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #2b579a;
-            --secondary: #eff4f9;
-            --dark: #333333;
-            --success: #28a745;
-            --warning: #ffc107;
-            --info: #17a2b8;
-            --gray: #6c757d;
-            --light: #ffffff;
+            --bg: #f2f0ea;
+            --surface: #ffffff;
+            --surface-alt: #f7f5f0;
+            --ink: #1e2529;
+            --muted: #6b7580;
+            --line: #e6e2d8;
+
+            --primary: #155e63;
+            --primary-dark: #0e4448;
+            --primary-soft: #e3efef;
+            --accent: #e08a1e;
+
+            --idea-bg: #eceef0;     --idea-fg: #4a545e;
+            --appr-bg: #dde8fb;     --appr-fg: #1c4fa8;
+            --work-bg: #fdeecd;     --work-fg: #9a6410;
+            --plan-bg: #d8efdd;     --plan-fg: #1c6b39;
+
+            --radius: 18px;
+            --radius-sm: 12px;
+            --shadow: 0 8px 24px rgba(20, 30, 40, 0.06);
+            --shadow-lift: 0 12px 32px rgba(20, 30, 40, 0.12);
+
+            --display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+            --body: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
         }
 
+        * { box-sizing: border-box; }
+
+        html { -webkit-text-size-adjust: 100%; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f6f9;
-            color: var(--dark);
+            font-family: var(--body);
+            background:
+                radial-gradient(1100px 500px at 100% -10%, #e9efe6 0%, transparent 60%),
+                var(--bg);
+            color: var(--ink);
             margin: 0;
-            padding: 20px;
+            padding: 0 0 96px;
+            line-height: 1.5;
+            min-height: 100vh;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1080px;
             margin: 0 auto;
+            padding: 0 16px;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #e0e0e0;
+        /* ---------- Header ---------- */
+        header.site {
+            padding: 28px 0 22px;
         }
 
-        header h1 {
+        .brandline {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--display);
+            font-weight: 600;
+            font-size: 0.78rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
             color: var(--primary);
+            background: var(--primary-soft);
+            padding: 6px 12px;
+            border-radius: 999px;
+            margin-bottom: 14px;
+        }
+        .brandline .dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--accent);
+        }
+
+        header.site h1 {
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: clamp(1.9rem, 7vw, 2.9rem);
+            line-height: 1.05;
             margin: 0;
-            font-size: 2.5rem;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+        }
+        header.site p.sub {
+            color: var(--muted);
+            margin: 8px 0 0;
+            max-width: 46ch;
+            font-size: 0.98rem;
         }
 
-        header p {
-            color: var(--gray);
-            margin: 5px 0 0 0;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 30px;
-        }
-
-        @media (min-width: 768px) {
-            .grid {
-                grid-template-columns: 1fr 2fr;
-            }
+        /* ---------- Layout ---------- */
+        .layout {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
         .card {
-            background: var(--light);
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            position: relative;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
         }
 
-        .card h2 {
-            margin-top: 0;
-            margin-bottom: 20px;
+        .card-pad { padding: 20px; }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin: 0 0 4px;
+        }
+        .section-title h2 {
+            font-family: var(--display);
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+        .counter {
+            font-family: var(--display);
+            font-size: 0.8rem;
+            font-weight: 600;
             color: var(--primary);
-            font-size: 1.5rem;
-            border-bottom: 1px solid var(--secondary);
-            padding-bottom: 10px;
+            background: var(--primary-soft);
+            border-radius: 999px;
+            padding: 4px 11px;
+            white-space: nowrap;
         }
 
-        /* Form di inserimento */
-        .form-group {
-            margin-bottom: 15px;
+        /* ---------- Compose (form) ---------- */
+        .compose__toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            border: none;
+            background: none;
+            padding: 20px;
+            cursor: pointer;
+            font-family: var(--display);
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--ink);
         }
+        .compose__toggle .plus {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #fff;
+            font-size: 1.3rem;
+            line-height: 1;
+            transition: transform 0.25s ease;
+            flex-shrink: 0;
+        }
+        .compose.open .compose__toggle .plus { transform: rotate(45deg); }
 
+        .compose__body {
+            display: none;
+            padding: 0 20px 20px;
+        }
+        .compose.open .compose__body { display: block; }
+
+        .form-group { margin-bottom: 16px; }
         .form-group label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 7px;
             font-weight: 600;
+            font-size: 0.86rem;
+            color: var(--ink);
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1.5px solid var(--line);
+            border-radius: var(--radius-sm);
+            background: var(--surface-alt);
+            font-family: inherit;
+            font-size: 16px; /* impedisce lo zoom automatico su iOS */
+            color: var(--ink);
+            transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .form-group textarea { resize: vertical; min-height: 96px; }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(21, 94, 99, 0.12);
         }
 
-        .form-group input, .form-group textarea, .form-group select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-family: inherit;
+        .select-native {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7580' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 38px;
         }
 
         .form-row-inline {
             display: grid;
-            grid-template-columns: 1fr 2fr;
+            grid-template-columns: 130px 1fr;
             gap: 10px;
         }
 
-        button {
+        button.primary {
             background-color: var(--primary);
-            color: white;
+            color: #fff;
             border: none;
-            padding: 12px 20px;
-            border-radius: 4px;
+            padding: 15px 20px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            font-weight: bold;
+            font-family: var(--display);
+            font-weight: 600;
             width: 100%;
             font-size: 1rem;
-            transition: background 0.2s;
+            min-height: 52px;
+            transition: background 0.2s, transform 0.06s;
         }
-
-        button:hover {
-            background-color: #1e3d6b;
-        }
-
-        button:disabled {
-            background-color: var(--gray);
-            cursor: not-allowed;
-        }
-
-        /* Tabella Proposte */
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th, td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        th {
-            background-color: var(--secondary);
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        /* Badge di Stato */
-        .badge {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        .badge-idea { background-color: #e2e3e5; color: #383d41; }
-        .badge-approvata { background-color: #cce5ff; color: #004085; }
-        .badge-working { background-color: #fff3cd; color: #856404; }
-        .badge-pianificata { background-color: #d4edda; color: #155724; }
-
-        .btn-delete {
-            background: none;
-            border: none;
-            color: #dc3545;
-            cursor: pointer;
-            font-size: 0.9rem;
-            text-decoration: underline;
-            padding: 0;
-            width: auto;
-        }
-        
-        .btn-delete:hover {
-            color: #bd2130;
-            background: none;
-        }
+        button.primary:hover { background-color: var(--primary-dark); }
+        button.primary:active { transform: translateY(1px); }
+        button.primary:disabled { background-color: var(--muted); cursor: not-allowed; }
 
         .loading-overlay {
             display: none;
             color: var(--primary);
-            font-weight: bold;
+            font-weight: 600;
             text-align: center;
-            margin-top: 10px;
+            margin-top: 12px;
+            font-size: 0.9rem;
+        }
+
+        /* ---------- Filtri ---------- */
+        .filters {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 2px 0 6px;
+            margin: 14px 0 4px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .filters::-webkit-scrollbar { display: none; }
+        .chip {
+            flex: 0 0 auto;
+            border: 1.5px solid var(--line);
+            background: var(--surface);
+            color: var(--muted);
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s;
+        }
+        .chip:hover { border-color: var(--primary); color: var(--primary); }
+        .chip.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        /* ---------- Lista proposte (schede) ---------- */
+        .proposals {
+            display: grid;
+            gap: 14px;
+        }
+
+        .proposal {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 18px;
+            box-shadow: var(--shadow);
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .proposal:hover { box-shadow: var(--shadow-lift); transform: translateY(-2px); }
+
+        .proposal__head {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .avatar {
+            flex-shrink: 0;
+            width: 42px; height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), #1f8a80);
+            color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.02em;
+        }
+        .proposal__meta { flex: 1; min-width: 0; }
+        .proposal__name {
+            font-weight: 700;
+            font-size: 1.02rem;
+            margin: 0;
+            color: var(--ink);
+        }
+        .proposal__date {
+            margin: 3px 0 0;
+            font-size: 0.85rem;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .pill-type {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--primary);
+            background: var(--primary-soft);
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+
+        .badge {
+            flex-shrink: 0;
+            display: inline-block;
+            padding: 5px 11px;
+            border-radius: 999px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            line-height: 1.3;
+            white-space: nowrap;
+        }
+        .badge-idea        { background: var(--idea-bg); color: var(--idea-fg); }
+        .badge-approvata   { background: var(--appr-bg); color: var(--appr-fg); }
+        .badge-working     { background: var(--work-bg); color: var(--work-fg); }
+        .badge-pianificata { background: var(--plan-bg); color: var(--plan-fg); }
+
+        .proposal__desc {
+            margin: 0 0 16px;
+            color: #3a434b;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .proposal__foot {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-top: 14px;
+            border-top: 1px solid var(--line);
+        }
+        .proposal__foot .status-select {
+            flex: 1;
+            padding: 10px 32px 10px 12px;
+            border: 1.5px solid var(--line);
+            border-radius: 10px;
+            background-color: var(--surface-alt);
+            font-family: inherit;
+            font-size: 0.9rem;
+            color: var(--ink);
+            -webkit-appearance: none;
+            appearance: none;
+            cursor: pointer;
+        }
+        .proposal__foot .status-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(21, 94, 99, 0.12);
+        }
+
+        .btn-delete {
+            flex-shrink: 0;
+            background: none;
+            border: 1.5px solid var(--line);
+            color: #b23b3b;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 10px 14px;
+            border-radius: 10px;
+            min-height: 42px;
+            transition: all 0.15s;
+        }
+        .btn-delete:hover { border-color: #d64545; background: #fdecec; }
+
+        .state-msg {
+            text-align: center;
+            color: var(--muted);
+            padding: 36px 16px;
+            font-size: 0.95rem;
+        }
+        .state-msg.error { color: #c0392b; }
+        .list-loading {
+            text-align: center;
+            color: var(--primary);
+            font-weight: 600;
+            padding: 24px;
+            font-size: 0.92rem;
+        }
+
+        /* ---------- Desktop ---------- */
+        @media (min-width: 900px) {
+            body { padding-bottom: 40px; }
+            header.site { padding: 44px 0 30px; }
+            .layout {
+                flex-direction: row;
+                align-items: flex-start;
+            }
+            .compose-col {
+                flex: 0 0 360px;
+                position: sticky;
+                top: 20px;
+            }
+            .list-col { flex: 1; min-width: 0; }
+
+            .compose__toggle { cursor: default; }
+            .compose__toggle .plus { display: none; }
+            .compose__body { display: block !important; }
+
+            .proposals { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <header>
-        <h1>Gestione Eventi SMS</h1>
-        <p>Piattaforma interna per il coordinamento delle attività e delle proposte del Circolo</p>
+    <header class="site">
+        <span class="brandline"><span class="dot"></span>Circolo SMS</span>
+        <h1>Gestione eventi<br>e proposte</h1>
+        <p class="sub">Piattaforma interna per proporre, valutare e coordinare le attività del Circolo.</p>
     </header>
 
-    <div class="grid">
-        <div class="card">
-            <h2>Nuova Proposta</h2>
-            <form id="proposalForm">
-                <div class="form-group">
-                    <label for="proposer">Propositore / Referente</label>
-                    <input type="text" id="proposer" required placeholder="Nome e Cognome">
+    <div class="layout">
+
+        <!-- Colonna form -->
+        <div class="compose-col">
+            <div class="card compose open" id="composeCard">
+                <button type="button" class="compose__toggle" id="composeToggle" aria-expanded="true">
+                    <span>Nuova proposta</span>
+                    <span class="plus" aria-hidden="true">+</span>
+                </button>
+
+                <div class="compose__body">
+                    <form id="proposalForm">
+                        <div class="form-group">
+                            <label for="proposer">Propositore / referente</label>
+                            <input type="text" id="proposer" required placeholder="Nome e cognome">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Descrizione dell'evento</label>
+                            <textarea id="description" rows="4" required placeholder="Racconta l'idea, il tipo di attività, il luogo…"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dateDetails">Data / ricorrenza</label>
+                            <div class="form-row-inline">
+                                <select id="dateType" class="select-native" onchange="toggleDateInput()">
+                                    <option value="Singolo">Singolo</option>
+                                    <option value="Ricorrente">Ricorrente</option>
+                                </select>
+                                <input type="text" id="dateDetails" required placeholder="es. 15 ottobre">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="status">Stato iniziale</label>
+                            <select id="status" class="select-native">
+                                <option value="Idea">Idea</option>
+                                <option value="Approvata dal consiglio">Approvata dal consiglio</option>
+                                <option value="Working progress">Working progress</option>
+                                <option value="Pianificata">Pianificata</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="primary" id="submitBtn">Aggiungi proposta</button>
+                        <div id="formLoading" class="loading-overlay">Salvataggio in corso…</div>
+                    </form>
                 </div>
-
-                <div class="form-group">
-                    <label for="description">Descrizione dell'Evento</label>
-                    <textarea id="description" rows="4" required placeholder="Descrivi l'idea, il tipo di attività, ecc..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Tipologia Data</label>
-                    <div class="form-row-inline">
-                        <select id="dateType" onchange="toggleDateInput()">
-                            <option value="Singolo">Singolo</option>
-                            <option value="Ricorrente">Ricorrente</option>
-                        </select>
-                        <input type="text" id="dateDetails" required placeholder="es. 15 Ottobre">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="status">Stato Iniziale</label>
-                    <select id="status">
-                        <option value="Idea">Idea</option>
-                        <option value="Approvata dal consiglio">Approvata dal consiglio</option>
-                        <option value="Working progress">Working progress</option>
-                        <option value="Pianificata">Pianificata</option>
-                    </select>
-                </div>
-
-                <button type="submit" id="submitBtn">Aggiungi Proposta</button>
-                <div id="formLoading" class="loading-overlay">Salvataggio in corso...</div>
-            </form>
-        </div>
-
-        <div class="card">
-            <h2>Registro delle Proposte</h2>
-            <div id="tableLoading" style="text-align: center; color: var(--primary); font-weight: bold; padding: 20px;">
-                Caricamento dati dal server...
-            </div>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Propositore</th>
-                            <th>Descrizione</th>
-                            <th>Data / Ricorrenza</th>
-                            <th>Stato</th>
-                            <th>Azioni</th>
-                        </tr>
-                    </thead>
-                    <tbody id="proposalTableBody">
-                        </tbody>
-                </table>
             </div>
         </div>
+
+        <!-- Colonna lista -->
+        <div class="list-col">
+            <div class="section-title">
+                <h2>Registro delle proposte</h2>
+                <span class="counter" id="counter">—</span>
+            </div>
+
+            <div class="filters" id="filters">
+                <button class="chip active" data-filter="Tutte">Tutte</button>
+                <button class="chip" data-filter="Idea">Idea</button>
+                <button class="chip" data-filter="Approvata dal consiglio">Approvate</button>
+                <button class="chip" data-filter="Working progress">In lavorazione</button>
+                <button class="chip" data-filter="Pianificata">Pianificate</button>
+            </div>
+
+            <div id="tableLoading" class="list-loading">Caricamento dati dal server…</div>
+            <div class="proposals" id="proposalList"></div>
+        </div>
+
     </div>
 </div>
 
 <script>
-   // Sostituisci questa stringa con l'URL ottenuto dalla pubblicazione dell'Apps Script
-   const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxmSeOpmtrrAbD8gEBf1-Am1BVHc1tCW4mywwCZG-NhiGNZMCmK9EkpN4gPvIJRais9/exec';
-   let proposals = [];
-   const form = document.getElementById('proposalForm');
-   const tableBody = document.getElementById('proposalTableBody');
-   const submitBtn = document.getElementById('submitBtn');
-   const formLoading = document.getElementById('formLoading');
-   const tableLoading = document.getElementById('tableLoading');
-   // Funzione GET per scaricare i dati
-   async function fetchProposals() {
-       tableLoading.style.display = 'block';
-       try {
-           const response = await fetch(WEB_APP_URL);
-           proposals = await response.json();
-           renderProposals();
-       } catch (error) {
-           console.error("Errore nel caricamento:", error);
-           tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">Errore di connessione in lettura.</td></tr>`;
-       } finally {
-           tableLoading.style.display = 'none';
-       }
-   }
-   // Funzione di rendering tabella
-   function renderProposals() {
-       tableBody.innerHTML = '';
-       if (proposals.length === 0) {
-           tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:gray;">Nessuna proposta registrata.</td></tr>`;
-           return;
-       }
-       proposals.forEach((p) => {
-           let badgeClass = 'badge-idea';
-           if (p.status === 'Approvata dal consiglio') badgeClass = 'badge-approvata';
-           if (p.status === 'Working progress') badgeClass = 'badge-working';
-           if (p.status === 'Pianificata') badgeClass = 'badge-pianificata';
-           const row = document.createElement('tr');
-           row.innerHTML = `
-<td><strong>${escapeHTML(String(p.proposer))}</strong></td>
-<td>${escapeHTML(String(p.description))}</td>
-<td><small>(${p.dateType})</small><br>${escapeHTML(String(p.dateDetails))}</td>
-<td>
-<select onchange="updateStatus('${p.id}', this.value)" style="padding: 2px; border-radius:4px;">
-<option value="Idea" ${p.status === 'Idea' ? 'selected' : ''}>Idea</option>
-<option value="Approvata dal consiglio" ${p.status === 'Approvata dal consiglio' ? 'selected' : ''}>Approvata dal consiglio</option>
-<option value="Working progress" ${p.status === 'Working progress' ? 'selected' : ''}>Working progress</option>
-<option value="Pianificata" ${p.status === 'Pianificata' ? 'selected' : ''}>Pianificata</option>
-</select>
-<br><span class="badge ${badgeClass}" style="margin-top: 5px;">${p.status}</span>
-</td>
-<td>
-<button class="btn-delete" onclick="deleteProposal('${p.id}')">Elimina</button>
-</td>
-           `;
-           tableBody.appendChild(row);
-       });
-   }
-   // Gestione invio modulo (POST in modalità no-cors)
-   form.addEventListener('submit', async function(e) {
-       e.preventDefault();
-       submitBtn.disabled = true;
-       formLoading.style.display = 'block';
-       const payload = {
-           action: 'create',
-           proposer: document.getElementById('proposer').value,
-           description: document.getElementById('description').value,
-           dateType: document.getElementById('dateType').value,
-           dateDetails: document.getElementById('dateDetails').value,
-           status: document.getElementById('status').value
-       };
-       try {
-           await fetch(WEB_APP_URL, {
-               method: 'POST',
-               mode: 'no-cors', // Questo evita l'errore di lettura del redirect 302
-               headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-               body: JSON.stringify(payload)
-           });
-           form.reset();
-           document.getElementById('dateType').value = 'Singolo';
-           // Diamogli mezzo secondo di respiro per dare tempo a Google di scrivere la riga
-           setTimeout(fetchProposals, 500);
-       } catch (error) {
-           console.error("Errore invisibile:", error);
-       } finally {
-           submitBtn.disabled = false;
-           formLoading.style.display = 'none';
-       }
-   });
-   // Cambia stato (POST in modalità no-cors)
-   async function updateStatus(id, newStatus) {
-       tableLoading.style.display = 'block';
-       try {
-           await fetch(WEB_APP_URL, {
-               method: 'POST',
-               mode: 'no-cors',
-               headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-               body: JSON.stringify({ action: 'update', id: id, status: newStatus })
-           });
-           setTimeout(fetchProposals, 500);
-       } catch (error) {
-           console.error(error);
-           tableLoading.style.display = 'none';
-       }
-   }
-   // Elimina proposta (POST in modalità no-cors)
-   async function deleteProposal(id) {
-       if (confirm("Sei sicuro di voler eliminare questa proposta dal database?")) {
-           tableLoading.style.display = 'block';
-           try {
-               await fetch(WEB_APP_URL, {
-                   method: 'POST',
-                   mode: 'no-cors',
-                   headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                   body: JSON.stringify({ action: 'delete', id: id })
-               });
-               setTimeout(fetchProposals, 500);
-           } catch (error) {
-               console.error(error);
-               tableLoading.style.display = 'none';
-           }
-       }
-   }
-   function escapeHTML(str) {
-       if (str === "undefined" || str === null) return "";
-       return String(str).replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
-   }
-   function toggleDateInput() {
-       const type = document.getElementById('dateType').value;
-       const input = document.getElementById('dateDetails');
-       if (type === 'Singolo') input.placeholder = "es. 15 Ottobre";
-       else input.placeholder = "es. Ogni terzo venerdì del mese";
-   }
-   // Avvio iniziale
-   if (WEB_APP_URL !== 'INCOLLA_QUI_IL_TUO_URL_DI_APPS_SCRIPT') fetchProposals();
+    // Sostituisci questa stringa con l'URL ottenuto dalla pubblicazione dell'Apps Script
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxmSeOpmtrrAbD8gEBf1-Am1BVHc1tCW4mywwCZG-NhiGNZMCmK9EkpN4gPvIJRais9/exec';
+
+    let proposals = [];
+    let activeFilter = 'Tutte';
+
+    const form = document.getElementById('proposalForm');
+    const list = document.getElementById('proposalList');
+    const submitBtn = document.getElementById('submitBtn');
+    const formLoading = document.getElementById('formLoading');
+    const tableLoading = document.getElementById('tableLoading');
+    const counter = document.getElementById('counter');
+
+    // ---- Form comprimibile (mobile) ----
+    const composeCard = document.getElementById('composeCard');
+    document.getElementById('composeToggle').addEventListener('click', () => {
+        // Su desktop il form resta sempre aperto; il toggle agisce solo su mobile
+        if (window.matchMedia('(min-width: 900px)').matches) return;
+        composeCard.classList.toggle('open');
+    });
+
+    // ---- Filtri di stato ----
+    document.getElementById('filters').addEventListener('click', (e) => {
+        const chip = e.target.closest('.chip');
+        if (!chip) return;
+        activeFilter = chip.dataset.filter;
+        document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c === chip));
+        renderProposals();
+    });
+
+    // ---- GET: scarica i dati ----
+    async function fetchProposals() {
+        tableLoading.style.display = 'block';
+        try {
+            const response = await fetch(WEB_APP_URL);
+            proposals = await response.json();
+            renderProposals();
+        } catch (error) {
+            console.error("Errore nel caricamento:", error);
+            list.innerHTML = `<div class="state-msg error">Errore di connessione in lettura. Riprova più tardi.</div>`;
+            counter.textContent = '—';
+        } finally {
+            tableLoading.style.display = 'none';
+        }
+    }
+
+    function badgeClassFor(status) {
+        if (status === 'Approvata dal consiglio') return 'badge-approvata';
+        if (status === 'Working progress') return 'badge-working';
+        if (status === 'Pianificata') return 'badge-pianificata';
+        return 'badge-idea';
+    }
+
+    function initials(name) {
+        const parts = String(name).trim().split(/\s+/).filter(Boolean);
+        if (parts.length === 0) return '?';
+        if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+
+    // ---- Rendering ----
+    function renderProposals() {
+        const visible = activeFilter === 'Tutte'
+            ? proposals
+            : proposals.filter(p => p.status === activeFilter);
+
+        counter.textContent = proposals.length === 0
+            ? '0 proposte'
+            : `${proposals.length} propost${proposals.length === 1 ? 'a' : 'e'}`;
+
+        list.innerHTML = '';
+
+        if (proposals.length === 0) {
+            list.innerHTML = `<div class="state-msg">Nessuna proposta registrata.<br>Aggiungine una per iniziare.</div>`;
+            return;
+        }
+        if (visible.length === 0) {
+            list.innerHTML = `<div class="state-msg">Nessuna proposta con questo stato.</div>`;
+            return;
+        }
+
+        visible.forEach((p) => {
+            const badge = badgeClassFor(p.status);
+            const card = document.createElement('article');
+            card.className = 'proposal';
+            card.innerHTML = `
+                <div class="proposal__head">
+                    <div class="avatar">${escapeHTML(initials(p.proposer))}</div>
+                    <div class="proposal__meta">
+                        <p class="proposal__name">${escapeHTML(String(p.proposer))}</p>
+                        <p class="proposal__date">
+                            <span class="pill-type">${escapeHTML(String(p.dateType))}</span>
+                            ${escapeHTML(String(p.dateDetails))}
+                        </p>
+                    </div>
+                    <span class="badge ${badge}">${escapeHTML(String(p.status))}</span>
+                </div>
+                <p class="proposal__desc">${escapeHTML(String(p.description))}</p>
+                <div class="proposal__foot">
+                    <select class="status-select" onchange="updateStatus('${p.id}', this.value)">
+                        <option value="Idea" ${p.status === 'Idea' ? 'selected' : ''}>Idea</option>
+                        <option value="Approvata dal consiglio" ${p.status === 'Approvata dal consiglio' ? 'selected' : ''}>Approvata dal consiglio</option>
+                        <option value="Working progress" ${p.status === 'Working progress' ? 'selected' : ''}>Working progress</option>
+                        <option value="Pianificata" ${p.status === 'Pianificata' ? 'selected' : ''}>Pianificata</option>
+                    </select>
+                    <button class="btn-delete" onclick="deleteProposal('${p.id}')">Elimina</button>
+                </div>
+            `;
+            list.appendChild(card);
+        });
+    }
+
+    // ---- POST: crea (no-cors) ----
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        submitBtn.disabled = true;
+        formLoading.style.display = 'block';
+
+        const payload = {
+            action: 'create',
+            proposer: document.getElementById('proposer').value,
+            description: document.getElementById('description').value,
+            dateType: document.getElementById('dateType').value,
+            dateDetails: document.getElementById('dateDetails').value,
+            status: document.getElementById('status').value
+        };
+
+        try {
+            await fetch(WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors', // evita l'errore di lettura del redirect 302
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(payload)
+            });
+            form.reset();
+            document.getElementById('dateType').value = 'Singolo';
+            // Mezzo secondo di respiro per dare tempo a Google di scrivere la riga
+            setTimeout(fetchProposals, 500);
+        } catch (error) {
+            console.error("Errore invisibile:", error);
+        } finally {
+            submitBtn.disabled = false;
+            formLoading.style.display = 'none';
+        }
+    });
+
+    // ---- POST: aggiorna stato (no-cors) ----
+    async function updateStatus(id, newStatus) {
+        tableLoading.style.display = 'block';
+        try {
+            await fetch(WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'update', id: id, status: newStatus })
+            });
+            setTimeout(fetchProposals, 500);
+        } catch (error) {
+            console.error(error);
+            tableLoading.style.display = 'none';
+        }
+    }
+
+    // ---- POST: elimina (no-cors) ----
+    async function deleteProposal(id) {
+        if (confirm("Sei sicuro di voler eliminare questa proposta dal database?")) {
+            tableLoading.style.display = 'block';
+            try {
+                await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'delete', id: id })
+                });
+                setTimeout(fetchProposals, 500);
+            } catch (error) {
+                console.error(error);
+                tableLoading.style.display = 'none';
+            }
+        }
+    }
+
+    function escapeHTML(str) {
+        if (str === "undefined" || str === null) return "";
+        return String(str).replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+    }
+
+    function toggleDateInput() {
+        const type = document.getElementById('dateType').value;
+        const input = document.getElementById('dateDetails');
+        input.placeholder = (type === 'Singolo') ? "es. 15 ottobre" : "es. Ogni terzo venerdì del mese";
+    }
+
+    // ---- Avvio ----
+    if (WEB_APP_URL !== 'INCOLLA_QUI_IL_TUO_URL_DI_APPS_SCRIPT') fetchProposals();
 </script>
 
 </body>
