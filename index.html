@@ -664,6 +664,34 @@
         }
     }
 
+    // Formatta la data di creazione in DD/MM/YYYY
+    function pad2(n) { return String(n).padStart(2, '0'); }
+    function toDMY(date) {
+        if (!(date instanceof Date) || isNaN(date.getTime())) return null;
+        return `${pad2(date.getDate())}/${pad2(date.getMonth() + 1)}/${date.getFullYear()}`;
+    }
+    // Ricava la data di creazione della proposta dai campi disponibili
+    function creationDate(p) {
+        // Prova i nomi di campo più comuni per un timestamp di creazione
+        const candidates = [p.creationDate, p['creation date'], p.createdAt, p.created,
+                            p.creato, p.dataCreazione, p.timestamp, p.Timestamp,
+                            p.date, p.Data, p.data];
+        for (const c of candidates) {
+            if (c !== undefined && c !== null && c !== '') {
+                const s = toDMY(new Date(c));
+                if (s) return s;
+            }
+        }
+        // Fallback: l'id potrebbe essere un epoch generato alla creazione (13 cifre = ms, 10 = secondi)
+        const idNum = Number(p.id);
+        if (!isNaN(idNum) && idNum > 0) {
+            const ms = idNum < 1e12 ? idNum * 1000 : idNum;
+            const s = toDMY(new Date(ms));
+            if (s) return s;
+        }
+        return null;
+    }
+
     function badgeClassFor(status) {
         if (status === 'Approvata dal consiglio') return 'badge-approvata';
         if (status === 'Working progress') return 'badge-working';
@@ -710,8 +738,7 @@
                     <div class="proposal__meta">
                         <p class="proposal__name">${escapeHTML(String(p.proposer))}</p>
                         <p class="proposal__date">
-                            <span class="pill-type">${escapeHTML(String(p.dateType))}</span>
-                            ${escapeHTML(String(p.dateDetails))}
+                            Proposta creata il: ${escapeHTML(creationDate(p) || 'data non disponibile')}
                         </p>
                     </div>
                     <span class="badge ${badge}">${escapeHTML(String(p.status))}</span>
