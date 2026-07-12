@@ -902,26 +902,12 @@
 
                         <div class="form-group">
                             <label for="dateType">Tipologia Evento</label>
-                            <div class="form-row-inline">
-                                <select id="dateType" class="select-native" onchange="toggleDateInput()">
-                                    <option value="Singolo">Singolo</option>
-                                    <option value="Ricorrente">Ricorrente</option>
-                                </select>
-
-                                <div class="date-field">
-                                    <!-- Evento Singolo: data da calendario oppure da definire -->
-                                    <div id="dateSingle" class="date-single">
-                                        <input type="date" id="dateDatePicker" class="date-picker" onclick="if(this.showPicker){try{this.showPicker()}catch(_){}}">
-                                        <label class="date-tbd">
-                                            <input type="checkbox" id="dateTBD" onchange="toggleTBD()">
-                                            <span>Data da definire</span>
-                                        </label>
-                                    </div>
-
-                                    <!-- Evento Ricorrente: descrizione libera -->
-                                    <input type="text" id="dateRecurringText" class="date-recurring" placeholder="es. Ogni terzo venerdì del mese" style="display:none;">
-                                </div>
-                            </div>
+                            <select id="dateType" class="select-native">
+                                <option value="Singolo">Singolo</option>
+                                <option value="Serie">Serie</option>
+                                <option value="Ricorrente">Ricorrente</option>
+                                <option value="Da definire">Da definire</option>
+                            </select>
                         </div>
 
                         <div class="form-group">
@@ -1222,8 +1208,10 @@
                 <label>Tipologia Evento</label>
                 <div class="form-row-inline">
                     <select id="edit-dateType-${p.id}" class="select-native" onchange="onEditDateTypeChange('${p.id}')">
-                        <option value="Singolo" ${!isRecurring ? 'selected' : ''}>Singolo</option>
-                        <option value="Ricorrente" ${isRecurring ? 'selected' : ''}>Ricorrente</option>
+                        <option value="Singolo" ${existingDateType === 'Singolo' ? 'selected' : ''}>Singolo</option>
+                        <option value="Serie" ${existingDateType === 'Serie' ? 'selected' : ''}>Serie</option>
+                        <option value="Ricorrente" ${existingDateType === 'Ricorrente' ? 'selected' : ''}>Ricorrente</option>
+                        <option value="Da definire" ${existingDateType === 'Da definire' ? 'selected' : ''}>Da definire</option>
                     </select>
                     <input type="text" id="edit-dateDetails-${p.id}" placeholder="${placeholder}" value="${escapeHTML(String(existingDateDetails))}">
                 </div>
@@ -1312,21 +1300,12 @@
         submitBtn.disabled = true;
         formLoading.style.display = 'block';
 
-        const dateType = document.getElementById('dateType').value;
-        const dateDetails = readDateDetails(dateType);
-        if (dateDetails === null) {
-            // Validazione fallita: readDateDetails ha già avvisato l'utente
-            submitBtn.disabled = false;
-            formLoading.style.display = 'none';
-            return;
-        }
-
         const payload = {
             action: 'create',
             proposer: document.getElementById('proposer').value.trim(),
             description: document.getElementById('description').value,
-            dateType: dateType,
-            dateDetails: dateDetails,
+            dateType: document.getElementById('dateType').value,
+            dateDetails: '',
             status: document.getElementById('status').value
         };
 
@@ -1339,10 +1318,6 @@
             });
             form.reset();
             document.getElementById('dateType').value = 'Singolo';
-            document.getElementById('dateTBD').checked = false;
-            document.getElementById('dateDatePicker').disabled = false;
-            toggleTBD();
-            toggleDateInput();
             // Mezzo secondo di respiro per dare tempo a Google di scrivere la riga
             setTimeout(fetchProposals, 500);
         } catch (error) {
@@ -1377,56 +1352,11 @@
         return String(str).replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
     }
 
-    function toggleDateInput() {
-        const type = document.getElementById('dateType').value;
-        const single = document.getElementById('dateSingle');
-        const recurring = document.getElementById('dateRecurringText');
-        if (type === 'Singolo') {
-            single.style.display = 'flex';
-            recurring.style.display = 'none';
-        } else {
-            single.style.display = 'none';
-            recurring.style.display = 'block';
-        }
-    }
-
-    // "Data da definire": disabilita il calendario quando selezionato e diventa blu
-    function toggleTBD() {
-        const tbd = document.getElementById('dateTBD').checked;
-        const picker = document.getElementById('dateDatePicker');
-        const pill = document.getElementById('dateTBD').closest('.date-tbd');
-        picker.disabled = tbd;
-        if (tbd) picker.value = '';
-        if (pill) pill.classList.toggle('is-active', tbd);
-    }
-
     // Trasforma una data ISO (YYYY-MM-DD) in formato leggibile italiano
     function formatItalianDate(iso) {
         const [y, m, d] = iso.split('-').map(Number);
         const date = new Date(y, m - 1, d); // costruzione locale, evita shift di fuso orario
         return date.toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
-    }
-
-    // Ricava la stringa dateDetails dal form; ritorna null se la validazione fallisce
-    function readDateDetails(type) {
-        if (type === 'Singolo') {
-            if (document.getElementById('dateTBD').checked) {
-                return 'Data da definire';
-            }
-            const val = document.getElementById('dateDatePicker').value;
-            if (!val) {
-                alert('Seleziona una data dal calendario oppure spunta "Data da definire".');
-                return null;
-            }
-            return formatItalianDate(val);
-        }
-        // Ricorrente
-        const text = document.getElementById('dateRecurringText').value.trim();
-        if (!text) {
-            alert('Descrivi la ricorrenza dell\'evento (es. "Ogni terzo venerdì del mese").');
-            return null;
-        }
-        return text;
     }
 
     // =====================================================================
@@ -1477,6 +1407,7 @@
         }
 
         const badge = badgeClassFor(p.status);
+        const existingDateType = pick(p, ['dateType', 'tipologia', 'Tipologia']) || 'Singolo';
 
         detailViewEl.innerHTML = `
             <button class="detail-back" onclick="backToList()">← Torna al registro</button>
@@ -1485,6 +1416,10 @@
                 <p class="detail-recap-line">
                     <span class="detail-recap-label">Descrizione evento</span>
                     ${escapeHTML(String(p.description))}
+                </p>
+                <p class="detail-recap-line">
+                    <span class="detail-recap-label">Tipologia evento</span>
+                    ${escapeHTML(existingDateType)}
                 </p>
                 <p class="detail-recap-line">
                     <span class="detail-recap-label">Referente</span>
@@ -1699,7 +1634,6 @@
     }
 
     // ---- Avvio ----
-    toggleDateInput();
     render();
     if (WEB_APP_URL !== 'INCOLLA_QUI_IL_TUO_URL_DI_APPS_SCRIPT') fetchProposals();
 </script>
