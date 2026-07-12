@@ -462,6 +462,7 @@
 
         .proposal__foot {
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
             gap: 10px;
             padding-top: 14px;
@@ -485,6 +486,21 @@
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(21, 94, 99, 0.12);
         }
+
+        .btn-open {
+            flex-basis: 100%;
+            background: var(--primary-soft);
+            border: 1.5px solid var(--primary-soft);
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 0.88rem;
+            font-weight: 700;
+            padding: 11px 14px;
+            border-radius: 10px;
+            min-height: 44px;
+            transition: all 0.15s;
+        }
+        .btn-open:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
 
         .btn-delete,
         .btn-edit {
@@ -553,6 +569,161 @@
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(21, 94, 99, 0.12);
         }
+
+        /* ---------- Pagina di dettaglio attività ---------- */
+        .detail-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-family: var(--display);
+            font-weight: 600;
+            font-size: 0.92rem;
+            cursor: pointer;
+            padding: 8px 0;
+            margin-bottom: 14px;
+        }
+        .detail-card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
+        }
+        .detail-card h3 {
+            font-family: var(--display);
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 0 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .detail-recap-desc {
+            border-top: 1px solid var(--line);
+            padding-top: 12px;
+            margin-top: 12px;
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+        .detail-recap-desc p { margin: 0 0 6px; }
+        .detail-recap-desc p:last-child { margin-bottom: 0; }
+
+        .chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+        .team-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 6px 8px 6px 12px;
+            border-radius: 999px;
+        }
+        .team-chip button {
+            background: none;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            font-size: 1rem;
+            line-height: 1;
+            padding: 2px;
+        }
+        .detail-add-row { display: flex; gap: 8px; }
+        .detail-add-row input { flex: 1; }
+        .detail-add-row button {
+            flex-shrink: 0;
+            width: 48px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .occ-tbd-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.86rem;
+            font-weight: 600;
+            color: var(--muted);
+            cursor: pointer;
+            user-select: none;
+            padding: 7px 14px;
+            border: 1.5px solid var(--line);
+            border-radius: 999px;
+            margin-bottom: 14px;
+            transition: background 0.15s, border-color 0.15s, color 0.15s;
+        }
+        .occ-tbd-toggle input { width: 16px; height: 16px; accent-color: #fff; cursor: pointer; }
+        .occ-tbd-toggle.is-active {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: #fff;
+        }
+        .occ-row {
+            display: grid;
+            grid-template-columns: minmax(0,1fr) minmax(0,0.7fr) minmax(0,1.3fr) auto;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .occ-row input {
+            padding: 10px 12px;
+            border: 1.5px solid var(--line);
+            border-radius: var(--radius-sm);
+            background: var(--surface-alt);
+            font-family: inherit;
+            font-size: 0.88rem;
+            color: var(--ink);
+            min-width: 0;
+        }
+        .occ-row input:disabled { opacity: 0.5; cursor: not-allowed; }
+        .occ-row-remove {
+            background: none;
+            border: 1.5px solid var(--line);
+            color: #b23b3b;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            padding: 0 12px;
+        }
+        .detail-secondary-btn {
+            background: none;
+            border: 1.5px dashed var(--line);
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.86rem;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            width: 100%;
+        }
+        .detail-secondary-btn:hover { background: var(--primary-soft); border-style: solid; }
+
+        .checklist-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 0;
+            border-bottom: 1px solid var(--line);
+        }
+        .checklist-row:last-of-type { border-bottom: none; }
+        .checklist-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; flex-shrink: 0; }
+        .checklist-row .checklist-text { flex: 1; font-size: 0.92rem; min-width: 0; word-break: break-word; }
+        .checklist-row .checklist-text.done { text-decoration: line-through; color: var(--muted); }
+        .checklist-row .checklist-owner { font-size: 0.78rem; color: var(--muted); flex-shrink: 0; }
+        .checklist-row .checklist-remove { background: none; border: none; color: #b23b3b; cursor: pointer; font-size: 1rem; flex-shrink: 0; }
+        .checklist-add-row { display: flex; gap: 8px; margin-top: 12px; }
+        .checklist-add-row input:first-child { flex: 2; }
+        .checklist-add-row input:last-child { flex: 1; }
+
+        .detail-save-btn { margin-top: 4px; }
 
         .state-msg {
             text-align: center;
@@ -623,6 +794,7 @@
         <p class="sub">Piattaforma interna per proporre, valutare e coordinare le attività del Circolo.</p>
     </header>
 
+    <div id="listView">
     <div class="layout">
 
         <!-- Colonna form -->
@@ -714,6 +886,9 @@
         </div>
 
     </div>
+    </div>
+
+    <div id="detailView" style="display:none;"></div>
 </div>
 
 <script>
@@ -796,7 +971,7 @@
             const response = await fetch(WEB_APP_URL);
             proposals = await response.json();
             updateProposerFilterOptions();
-            renderProposals();
+            render();
         } catch (error) {
             console.error("Errore nel caricamento:", error);
             list.innerHTML = `<div class="state-msg error">Errore di connessione in lettura. Riprova più tardi.</div>`;
@@ -805,6 +980,33 @@
             tableLoading.style.display = 'none';
         }
     }
+
+    // ---- Router basato su hash: #/attivita/<id> mostra la scheda di dettaglio ----
+    const listViewEl = document.getElementById('listView');
+    const detailViewEl = document.getElementById('detailView');
+
+    function render() {
+        const match = location.hash.match(/^#\/attivita\/(.+)$/);
+        if (match) {
+            listViewEl.style.display = 'none';
+            detailViewEl.style.display = '';
+            renderDetail(decodeURIComponent(match[1]));
+        } else {
+            detailViewEl.style.display = 'none';
+            listViewEl.style.display = '';
+            renderProposals();
+        }
+    }
+
+    function openDetail(id) {
+        location.hash = '#/attivita/' + encodeURIComponent(id);
+    }
+
+    function backToList() {
+        location.hash = '';
+    }
+
+    window.addEventListener('hashchange', render);
 
     // Formatta la data di creazione in DD/MM/YYYY
     function pad2(n) { return String(n).padStart(2, '0'); }
@@ -908,6 +1110,7 @@
             </div>
             <p class="proposal__desc">${escapeHTML(String(p.description))}</p>
             <div class="proposal__foot">
+                <button class="btn-open" onclick="openDetail('${p.id}')">Apri scheda attività</button>
                 <button class="btn-edit" onclick="startEdit('${p.id}')">Modifica</button>
                 <button class="btn-delete" onclick="deleteProposal('${p.id}')">Elimina</button>
             </div>
@@ -1143,8 +1346,246 @@
         return text;
     }
 
+    // =====================================================================
+    // ---- Pagina di dettaglio attività (#/attivita/<id>) ----
+    // =====================================================================
+
+    // Stato di lavoro locale della scheda aperta (team, occorrenze, checklist)
+    // Vive solo in memoria finché non si preme "Salva dettagli"
+    let detailState = null;
+
+    // Estrae in modo sicuro un campo JSON dal record proposta, con fallback
+    function parseJSONField(p, keys, fallback) {
+        const raw = pick(p, keys);
+        if (!raw) return fallback;
+        try {
+            const parsed = JSON.parse(raw);
+            return parsed;
+        } catch (err) {
+            return fallback;
+        }
+    }
+
+    function renderDetail(id) {
+        const p = proposals.find(x => String(x.id) === String(id));
+
+        if (!p) {
+            // Se i dati non sono ancora arrivati (deep link) mostriamo un'attesa,
+            // se invece i dati ci sono ma l'id non esiste, un messaggio d'errore
+            detailViewEl.innerHTML = proposals.length === 0
+                ? `<div class="state-msg">Caricamento scheda in corso…</div>`
+                : `<div class="state-msg">Attività non trovata.<br><button class="detail-back" onclick="backToList()">← Torna al registro</button></div>`;
+            return;
+        }
+
+        // Se stiamo aprendo una scheda diversa dall'ultima, o è il primo render,
+        // (ri)costruiamo lo stato locale di lavoro dai dati del server
+        if (!detailState || String(detailState.id) !== String(id)) {
+            const team = parseJSONField(p, ['team'], []);
+            const occRaw = parseJSONField(p, ['occorrenze', 'occurrences'], { tbd: false, items: [] });
+            const checklist = parseJSONField(p, ['checklist'], []);
+            detailState = {
+                id: p.id,
+                team: Array.isArray(team) ? team : [],
+                occTbd: !!occRaw.tbd,
+                occItems: Array.isArray(occRaw.items) ? occRaw.items : [],
+                checklist: Array.isArray(checklist) ? checklist : []
+            };
+        }
+
+        const badge = badgeClassFor(p.status);
+        const existingDateType = pick(p, ['dateType', 'tipologia', 'Tipologia']) || 'Singolo';
+        const existingDateDetails = pick(p, ['dateDetails', 'dettaglioData', 'DataDettaglio', 'dataDettaglio']);
+
+        detailViewEl.innerHTML = `
+            <button class="detail-back" onclick="backToList()">← Torna al registro</button>
+
+            <div class="detail-card">
+                <div class="proposal__head" style="margin-bottom:0;">
+                    <div class="avatar">${escapeHTML(initials(p.proposer))}</div>
+                    <div class="proposal__meta">
+                        <p class="proposal__name">${escapeHTML(String(p.proposer))}</p>
+                        <p class="proposal__date">Proposta creata il: ${escapeHTML(creationDate(p) || 'data non disponibile')}</p>
+                    </div>
+                    <span class="badge ${badge}">${escapeHTML(String(p.status))}</span>
+                </div>
+                <div class="detail-recap-desc">
+                    <p><strong>Tipologia:</strong> ${escapeHTML(existingDateType)} — ${escapeHTML(existingDateDetails || 'nessun dettaglio')}</p>
+                    <p>${escapeHTML(String(p.description))}</p>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <h3>Team dei volontari</h3>
+                <div class="chip-list" id="detailTeamChips"></div>
+                <div class="detail-add-row">
+                    <input type="text" id="detailTeamInput" placeholder="Nome volontario">
+                    <button type="button" onclick="addTeamMember()">+</button>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <h3>Quando e dove</h3>
+                <label class="occ-tbd-toggle ${detailState.occTbd ? 'is-active' : ''}" id="occTbdLabel">
+                    <input type="checkbox" id="occTbdCheckbox" ${detailState.occTbd ? 'checked' : ''} onchange="toggleOccTbd()">
+                    <span>Da definire</span>
+                </label>
+                <div id="detailOccRows"></div>
+                <button type="button" class="detail-secondary-btn" onclick="addOccurrence()">+ Aggiungi occorrenza</button>
+            </div>
+
+            <div class="detail-card">
+                <h3>Checklist</h3>
+                <div id="detailChecklistRows"></div>
+                <div class="checklist-add-row">
+                    <input type="text" id="detailTaskInput" placeholder="Cosa va fatto">
+                    <input type="text" id="detailAssigneeInput" placeholder="Responsabile">
+                    <button type="button" onclick="addChecklistItem()" style="flex-shrink:0;width:48px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-size:1.2rem;font-weight:700;">+</button>
+                </div>
+            </div>
+
+            <button type="button" class="primary detail-save-btn" onclick="saveDetail()">Salva dettagli</button>
+            <div id="detailLoading" class="loading-overlay" style="display:none;"><span class="spinner"></span>Salvataggio in corso…</div>
+        `;
+
+        renderTeamChips();
+        renderOccRows();
+        renderChecklistRows();
+    }
+
+    // ---- Team dei volontari ----
+    function renderTeamChips() {
+        const box = document.getElementById('detailTeamChips');
+        if (!box) return;
+        box.innerHTML = detailState.team.length === 0
+            ? `<span style="font-size:0.85rem;color:var(--muted);">Nessun volontario assegnato.</span>`
+            : detailState.team.map((name, i) => `
+                <span class="team-chip">
+                    ${escapeHTML(name)}
+                    <button type="button" onclick="removeTeamMember(${i})" aria-label="Rimuovi">×</button>
+                </span>
+            `).join('');
+    }
+
+    function addTeamMember() {
+        const input = document.getElementById('detailTeamInput');
+        const name = input.value.trim();
+        if (!name) return;
+        detailState.team.push(name);
+        input.value = '';
+        renderTeamChips();
+    }
+
+    function removeTeamMember(index) {
+        detailState.team.splice(index, 1);
+        renderTeamChips();
+    }
+
+    // ---- Quando e dove ----
+    function toggleOccTbd() {
+        detailState.occTbd = document.getElementById('occTbdCheckbox').checked;
+        document.getElementById('occTbdLabel').classList.toggle('is-active', detailState.occTbd);
+        renderOccRows();
+    }
+
+    function renderOccRows() {
+        const box = document.getElementById('detailOccRows');
+        if (!box) return;
+        const disabled = detailState.occTbd ? 'disabled' : '';
+        box.innerHTML = detailState.occItems.length === 0
+            ? `<p style="font-size:0.85rem;color:var(--muted);margin:0 0 10px;">Nessuna occorrenza aggiunta.</p>`
+            : detailState.occItems.map((o, i) => `
+                <div class="occ-row">
+                    <input type="date" value="${escapeHTML(o.data || '')}" ${disabled} onchange="updateOccField(${i}, 'data', this.value)">
+                    <input type="time" value="${escapeHTML(o.ora || '')}" ${disabled} onchange="updateOccField(${i}, 'ora', this.value)">
+                    <input type="text" value="${escapeHTML(o.luogo || '')}" placeholder="Luogo" ${disabled} onchange="updateOccField(${i}, 'luogo', this.value)">
+                    <button type="button" class="occ-row-remove" ${disabled} onclick="removeOccurrence(${i})">✕</button>
+                </div>
+            `).join('');
+    }
+
+    function addOccurrence() {
+        detailState.occItems.push({ data: '', ora: '', luogo: '' });
+        renderOccRows();
+    }
+
+    function updateOccField(index, field, value) {
+        detailState.occItems[index][field] = value;
+    }
+
+    function removeOccurrence(index) {
+        detailState.occItems.splice(index, 1);
+        renderOccRows();
+    }
+
+    // ---- Checklist ----
+    function renderChecklistRows() {
+        const box = document.getElementById('detailChecklistRows');
+        if (!box) return;
+        box.innerHTML = detailState.checklist.length === 0
+            ? `<p style="font-size:0.85rem;color:var(--muted);margin:0;">Nessuna attività in lista.</p>`
+            : detailState.checklist.map((t, i) => `
+                <div class="checklist-row">
+                    <input type="checkbox" ${t.fatto ? 'checked' : ''} onchange="toggleChecklistDone(${i})">
+                    <span class="checklist-text ${t.fatto ? 'done' : ''}">${escapeHTML(t.testo)}</span>
+                    <span class="checklist-owner">${escapeHTML(t.responsabile || 'Da assegnare')}</span>
+                    <button type="button" class="checklist-remove" onclick="removeChecklistItem(${i})" aria-label="Rimuovi">✕</button>
+                </div>
+            `).join('');
+    }
+
+    function addChecklistItem() {
+        const taskInput = document.getElementById('detailTaskInput');
+        const assigneeInput = document.getElementById('detailAssigneeInput');
+        const testo = taskInput.value.trim();
+        if (!testo) return;
+        detailState.checklist.push({
+            testo: testo,
+            responsabile: assigneeInput.value.trim() || 'Da assegnare',
+            fatto: false
+        });
+        taskInput.value = '';
+        assigneeInput.value = '';
+        renderChecklistRows();
+    }
+
+    function toggleChecklistDone(index) {
+        detailState.checklist[index].fatto = !detailState.checklist[index].fatto;
+        renderChecklistRows();
+    }
+
+    function removeChecklistItem(index) {
+        detailState.checklist.splice(index, 1);
+        renderChecklistRows();
+    }
+
+    // ---- Salvataggio della scheda di dettaglio ----
+    async function saveDetail() {
+        const loading = document.getElementById('detailLoading');
+        if (loading) loading.style.display = 'block';
+        try {
+            await fetch(WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({
+                    action: 'update',
+                    id: detailState.id,
+                    team: JSON.stringify(detailState.team),
+                    occorrenze: JSON.stringify({ tbd: detailState.occTbd, items: detailState.occItems }),
+                    checklist: JSON.stringify(detailState.checklist)
+                })
+            });
+            setTimeout(fetchProposals, 500);
+        } catch (error) {
+            console.error(error);
+            if (loading) loading.style.display = 'none';
+        }
+    }
+
     // ---- Avvio ----
     toggleDateInput();
+    render();
     if (WEB_APP_URL !== 'INCOLLA_QUI_IL_TUO_URL_DI_APPS_SCRIPT') fetchProposals();
 </script>
 
