@@ -1685,6 +1685,9 @@
                     checklist: JSON.stringify(detailState.checklist)
                 })
             });
+            // Salvataggio riuscito: torna subito al registro e poi ricarica i dati aggiornati
+            detailState = null;
+            backToList();
             setTimeout(fetchProposals, 500);
         } catch (error) {
             console.error(error);
