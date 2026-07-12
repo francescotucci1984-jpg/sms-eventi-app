@@ -674,54 +674,119 @@
             border-color: #2563eb;
             color: #fff;
         }
-        .occ-row {
+        /* ---------- Riquadro "occorrenze inserite" (verde acqua) ---------- */
+        .occ-defined-box {
+            background: var(--primary-soft);
+            border: 1px solid #b8d9d6;
+            border-radius: 12px;
+            padding: 14px 16px;
             margin-bottom: 14px;
-            padding-bottom: 14px;
-            border-bottom: 1px solid var(--line);
         }
-        .occ-row:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .occ-row-top {
+        .occ-defined-label {
+            margin: 0 0 10px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--primary);
+        }
+        .occ-defined-row {
             display: flex;
-            gap: 8px;
-            margin-bottom: 8px;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
         }
-        .occ-row-top input { flex: 1; min-width: 0; }
-        .occ-row-bottom {
-            display: flex;
-            gap: 8px;
-        }
-        .occ-row-bottom input { flex: 1; min-width: 0; }
-        .occ-row input {
-            padding: 10px 12px;
-            border: 1.5px solid var(--line);
+        .occ-defined-row + .occ-defined-row { border-top: 1px solid #bcdbd8; }
+        .occ-defined-text { flex: 1; font-size: 0.88rem; color: var(--ink); min-width: 0; word-break: break-word; }
+        .occ-defined-remove {
+            flex-shrink: 0;
+            background: none;
+            border: 1.5px solid #bcdbd8;
+            color: #b23b3b;
             border-radius: var(--radius-sm);
-            background: var(--surface-alt);
+            cursor: pointer;
+            padding: 5px 12px;
+        }
+
+        /* ---------- Riquadro "aggiungi occorrenza" (ambra) ---------- */
+        .occ-add-box {
+            background: #fdf1de;
+            border: 1px solid #eecb96;
+            border-radius: 12px;
+            padding: 14px 16px;
+            transition: opacity 0.15s;
+        }
+        .occ-add-box.disabled { opacity: 0.55; }
+        .occ-add-label {
+            margin: 0 0 10px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #9a6410;
+        }
+        .occ-add-row { display: flex; gap: 8px; margin-bottom: 8px; }
+        .occ-add-row input {
+            flex: 1;
+            min-width: 0;
+            padding: 10px 12px;
+            border: 1.5px solid #e6d3ae;
+            border-radius: var(--radius-sm);
+            background: #fff;
             font-family: inherit;
             font-size: 0.88rem;
             color: var(--ink);
         }
-        .occ-row input:disabled { opacity: 0.5; cursor: not-allowed; }
-        .occ-row-remove {
-            flex-shrink: 0;
-            background: none;
-            border: 1.5px solid var(--line);
-            color: #b23b3b;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            padding: 0 14px;
+        .occ-add-row input:disabled { opacity: 0.6; cursor: not-allowed; }
+        /* Icone calendario/orologio disegnate via CSS: coerenti su tutti i dispositivi,
+           perché iOS Safari non mostra alcuna icona nativa su input date/time */
+        .occ-add-row input[type="date"],
+        .occ-add-row input[type="time"] {
+            -webkit-appearance: none;
+            appearance: none;
+            position: relative;
+            box-sizing: border-box;
+            padding-right: 36px;
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 18px 18px;
         }
-        .detail-secondary-btn {
-            background: none;
-            border: 1.5px dashed var(--line);
-            color: var(--primary);
-            font-weight: 600;
-            font-size: 0.86rem;
-            padding: 10px 14px;
-            border-radius: var(--radius-sm);
+        .occ-add-row input[type="date"] {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2316697a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E");
+        }
+        .occ-add-row input[type="time"] {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2316697a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpolyline points='12 7 12 12 16 14'/%3E%3C/svg%3E");
+        }
+        .occ-add-row input[type="date"]::-webkit-date-and-time-value,
+        .occ-add-row input[type="time"]::-webkit-date-and-time-value {
+            text-align: left;
+        }
+        .occ-add-row input[type="date"]::-webkit-calendar-picker-indicator,
+        .occ-add-row input[type="time"]::-webkit-calendar-picker-indicator {
+            opacity: 0;
             cursor: pointer;
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 36px;
+            height: 100%;
+            margin: 0;
+        }
+        .occ-add-btn {
             width: 100%;
+            border: none;
+            background: #e08a1e;
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.88rem;
+            padding: 11px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
         }
-        .detail-secondary-btn:hover { background: var(--primary-soft); border-style: solid; }
+        .occ-add-btn:hover { background: #c9760f; }
+        .occ-add-btn:disabled { cursor: not-allowed; }
+
+
 
         .checklist-row {
             display: flex;
@@ -1445,8 +1510,23 @@
                     <input type="checkbox" id="occTbdCheckbox" ${detailState.occTbd ? 'checked' : ''} onchange="toggleOccTbd()">
                     <span>Da definire</span>
                 </label>
-                <div id="detailOccRows"></div>
-                <button type="button" class="detail-secondary-btn" onclick="addOccurrence()">+ Aggiungi occorrenza</button>
+
+                <div class="occ-defined-box" id="occDefinedBox">
+                    <p class="occ-defined-label">Occorrenze inserite</p>
+                    <div id="occDefinedRows"></div>
+                </div>
+
+                <div class="occ-add-box${detailState.occTbd ? ' disabled' : ''}" id="occAddBox">
+                    <p class="occ-add-label">Aggiungi occorrenza</p>
+                    <div class="occ-add-row">
+                        <input type="date" id="newOccData" ${detailState.occTbd ? 'disabled' : ''}>
+                        <input type="time" id="newOccOra" ${detailState.occTbd ? 'disabled' : ''}>
+                    </div>
+                    <div class="occ-add-row">
+                        <input type="text" id="newOccLuogo" placeholder="Luogo" ${detailState.occTbd ? 'disabled' : ''}>
+                    </div>
+                    <button type="button" class="occ-add-btn" onclick="addOccurrenceFromForm()" ${detailState.occTbd ? 'disabled' : ''}>+ Aggiungi occorrenza</button>
+                </div>
             </div>
 
             <div class="detail-card">
@@ -1464,7 +1544,7 @@
         `;
 
         renderTeamChips();
-        renderOccRows();
+        renderDefinedOccurrences();
         renderChecklistRows();
     }
 
@@ -1500,41 +1580,51 @@
     function toggleOccTbd() {
         detailState.occTbd = document.getElementById('occTbdCheckbox').checked;
         document.getElementById('occTbdLabel').classList.toggle('is-active', detailState.occTbd);
-        renderOccRows();
+        const addBox = document.getElementById('occAddBox');
+        addBox.classList.toggle('disabled', detailState.occTbd);
+        addBox.querySelectorAll('input, button').forEach(el => { el.disabled = detailState.occTbd; });
     }
 
-    function renderOccRows() {
-        const box = document.getElementById('detailOccRows');
-        if (!box) return;
-        const disabled = detailState.occTbd ? 'disabled' : '';
-        box.innerHTML = detailState.occItems.length === 0
-            ? `<p style="font-size:0.85rem;color:var(--muted);margin:0 0 10px;">Nessuna occorrenza aggiunta.</p>`
-            : detailState.occItems.map((o, i) => `
-                <div class="occ-row">
-                    <div class="occ-row-top">
-                        <input type="date" value="${escapeHTML(o.data || '')}" ${disabled} onchange="updateOccField(${i}, 'data', this.value)">
-                        <input type="time" value="${escapeHTML(o.ora || '')}" ${disabled} onchange="updateOccField(${i}, 'ora', this.value)">
-                    </div>
-                    <div class="occ-row-bottom">
-                        <input type="text" value="${escapeHTML(o.luogo || '')}" placeholder="Luogo" ${disabled} onchange="updateOccField(${i}, 'luogo', this.value)">
-                        <button type="button" class="occ-row-remove" ${disabled} onclick="removeOccurrence(${i})">✕</button>
-                    </div>
-                </div>
-            `).join('');
+    // Testo leggibile di un'occorrenza, con segnaposto per i campi non ancora compilati
+    function occDisplayText(o) {
+        const dataText = o.data ? formatItalianDate(o.data) : 'data da definire';
+        const oraText = o.ora ? o.ora : 'ora da definire';
+        const luogoText = o.luogo ? o.luogo : 'luogo da definire';
+        return `${dataText} · ${oraText} · ${luogoText}`;
     }
 
-    function addOccurrence() {
-        detailState.occItems.push({ data: '', ora: '', luogo: '' });
-        renderOccRows();
+    function renderDefinedOccurrences() {
+        const outerBox = document.getElementById('occDefinedBox');
+        const rowsBox = document.getElementById('occDefinedRows');
+        if (!outerBox || !rowsBox) return;
+        outerBox.style.display = detailState.occItems.length === 0 ? 'none' : 'block';
+        rowsBox.innerHTML = detailState.occItems.map((o, i) => `
+            <div class="occ-defined-row">
+                <span class="occ-defined-text">${escapeHTML(occDisplayText(o))}</span>
+                <button type="button" class="occ-defined-remove" onclick="removeDefinedOccurrence(${i})">✕</button>
+            </div>
+        `).join('');
     }
 
-    function updateOccField(index, field, value) {
-        detailState.occItems[index][field] = value;
+    // Legge i tre campi del riquadro "Aggiungi occorrenza" e li accoda alla lista già inserita
+    function addOccurrenceFromForm() {
+        const dataEl = document.getElementById('newOccData');
+        const oraEl = document.getElementById('newOccOra');
+        const luogoEl = document.getElementById('newOccLuogo');
+        const data = dataEl.value;
+        const ora = oraEl.value;
+        const luogo = luogoEl.value.trim();
+        if (!data && !ora && !luogo) return;
+        detailState.occItems.push({ data: data, ora: ora, luogo: luogo });
+        dataEl.value = '';
+        oraEl.value = '';
+        luogoEl.value = '';
+        renderDefinedOccurrences();
     }
 
-    function removeOccurrence(index) {
+    function removeDefinedOccurrence(index) {
         detailState.occItems.splice(index, 1);
-        renderOccRows();
+        renderDefinedOccurrences();
     }
 
     // ---- Checklist ----
