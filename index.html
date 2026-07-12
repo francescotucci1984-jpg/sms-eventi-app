@@ -486,11 +486,11 @@
             box-shadow: 0 0 0 3px rgba(21, 94, 99, 0.12);
         }
 
-        .btn-delete {
-            flex-shrink: 0;
+        .btn-delete,
+        .btn-edit {
+            flex: 1;
             background: none;
             border: 1.5px solid var(--line);
-            color: #b23b3b;
             cursor: pointer;
             font-size: 0.85rem;
             font-weight: 600;
@@ -499,7 +499,60 @@
             min-height: 42px;
             transition: all 0.15s;
         }
+        .btn-delete { color: #b23b3b; }
         .btn-delete:hover { border-color: #d64545; background: #fdecec; }
+
+        .btn-edit { color: var(--primary); }
+        .btn-edit:hover { border-color: var(--primary); background: var(--primary-soft); }
+
+        /* ---------- Card in modalità modifica ---------- */
+        .proposal--editing { border-color: var(--primary); }
+        .edit-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 4px;
+        }
+        .edit-actions button.primary {
+            width: auto;
+            flex: 1;
+            min-height: 48px;
+        }
+        .btn-cancel {
+            flex: 1;
+            background: none;
+            border: 1.5px solid var(--line);
+            color: var(--muted);
+            cursor: pointer;
+            font-family: var(--display);
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 15px 20px;
+            border-radius: var(--radius-sm);
+            min-height: 48px;
+            transition: all 0.15s;
+        }
+        .btn-cancel:hover { background: var(--surface-alt); border-color: var(--muted); }
+
+        /* ---------- Filtro per Propositore ---------- */
+        .proposer-filter-row { margin: 2px 0 14px; }
+        .proposer-filter-select {
+            width: 100%;
+            padding: 12px 38px 12px 14px;
+            border: 1.5px solid var(--line);
+            border-radius: var(--radius-sm);
+            background-color: var(--surface-alt);
+            font-family: inherit;
+            font-size: 0.9rem;
+            color: var(--ink);
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .proposer-filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(21, 94, 99, 0.12);
+        }
 
         .state-msg {
             text-align: center;
@@ -650,6 +703,12 @@
                 <button class="chip" data-filter="Conclusa">Concluse</button>
             </div>
 
+            <div class="proposer-filter-row">
+                <select id="proposerFilterSelect" class="proposer-filter-select select-native">
+                    <option value="Tutte">Tutti i propositori</option>
+                </select>
+            </div>
+
             <div id="tableLoading" class="list-loading"><span class="spinner"></span>Aggiornamento in corso…</div>
             <div class="proposals" id="proposalList"></div>
         </div>
@@ -663,6 +722,8 @@
 
     let proposals = [];
     let activeFilter = 'Tutte';
+    let activeProposerFilter = 'Tutte';
+    let editingId = null;
 
     const form = document.getElementById('proposalForm');
     const list = document.getElementById('proposalList');
@@ -688,12 +749,36 @@
         renderProposals();
     });
 
+    // ---- Filtro per Propositore ----
+    document.getElementById('proposerFilterSelect').addEventListener('change', (e) => {
+        activeProposerFilter = e.target.value;
+        renderProposals();
+    });
+
+    // Ricostruisce le opzioni del filtro Propositore in base ai dati caricati
+    function updateProposerFilterOptions() {
+        const select = document.getElementById('proposerFilterSelect');
+        const uniqueNames = Array.from(
+            new Set(proposals.map(p => String(p.proposer || '').trim()).filter(Boolean))
+        ).sort((a, b) => a.localeCompare(b, 'it'));
+
+        select.innerHTML = '<option value="Tutte">Tutti i propositori</option>' +
+            uniqueNames.map(name => `<option value="${escapeHTML(name)}">${escapeHTML(name)}</option>`).join('');
+
+        // Se il propositore prima selezionato non esiste più tra le opzioni, torna a "Tutte"
+        if (activeProposerFilter !== 'Tutte' && !uniqueNames.includes(activeProposerFilter)) {
+            activeProposerFilter = 'Tutte';
+        }
+        select.value = activeProposerFilter;
+    }
+
     // ---- GET: scarica i dati ----
     async function fetchProposals() {
         tableLoading.style.display = 'block';
         try {
             const response = await fetch(WEB_APP_URL);
             proposals = await response.json();
+            updateProposerFilterOptions();
             renderProposals();
         } catch (error) {
             console.error("Errore nel caricamento:", error);
@@ -732,6 +817,14 @@
         return null;
     }
 
+    // Recupera il primo valore non vuoto tra vari possibili nomi di campo
+    function pick(obj, keys) {
+        for (const k of keys) {
+            if (obj[k] !== undefined && obj[k] !== null && obj[k] !== '') return obj[k];
+        }
+        return '';
+    }
+
     function badgeClassFor(status) {
         if (status === 'Approvata dal consiglio') return 'badge-approvata';
         if (status === 'Working progress') return 'badge-working';
@@ -749,9 +842,10 @@
 
     // ---- Rendering ----
     function renderProposals() {
-        const visible = activeFilter === 'Tutte'
-            ? proposals
-            : proposals.filter(p => p.status === activeFilter);
+        const visible = proposals.filter(p =>
+            (activeFilter === 'Tutte' || p.status === activeFilter) &&
+            (activeProposerFilter === 'Tutte' || p.proposer === activeProposerFilter)
+        );
 
         counter.textContent = proposals.length === 0
             ? '0 proposte'
@@ -764,39 +858,149 @@
             return;
         }
         if (visible.length === 0) {
-            list.innerHTML = `<div class="state-msg">Nessuna proposta con questo stato.</div>`;
+            list.innerHTML = `<div class="state-msg">Nessuna proposta con questo filtro.</div>`;
             return;
         }
 
         visible.forEach((p) => {
-            const badge = badgeClassFor(p.status);
             const card = document.createElement('article');
-            card.className = 'proposal';
-            card.innerHTML = `
-                <div class="proposal__head">
-                    <div class="avatar">${escapeHTML(initials(p.proposer))}</div>
-                    <div class="proposal__meta">
-                        <p class="proposal__name">${escapeHTML(String(p.proposer))}</p>
-                        <p class="proposal__date">
-                            Proposta creata il: ${escapeHTML(creationDate(p) || 'data non disponibile')}
-                        </p>
-                    </div>
-                    <span class="badge ${badge}">${escapeHTML(String(p.status))}</span>
-                </div>
-                <p class="proposal__desc">${escapeHTML(String(p.description))}</p>
-                <div class="proposal__foot">
-                    <select class="status-select" onchange="updateStatus('${p.id}', this.value)">
-                        <option value="Idea" ${p.status === 'Idea' ? 'selected' : ''}>Idea</option>
-                        <option value="Approvata dal consiglio" ${p.status === 'Approvata dal consiglio' ? 'selected' : ''}>Approvata dal consiglio</option>
-                        <option value="Working progress" ${p.status === 'Working progress' ? 'selected' : ''}>Working progress</option>
-                        <option value="Pianificata" ${p.status === 'Pianificata' ? 'selected' : ''}>Pianificata</option>
-                        <option value="Conclusa" ${p.status === 'Conclusa' ? 'selected' : ''}>Conclusa</option>
-                    </select>
-                    <button class="btn-delete" onclick="deleteProposal('${p.id}')">Elimina</button>
-                </div>
-            `;
+            if (String(p.id) === String(editingId)) {
+                card.className = 'proposal proposal--editing';
+                card.innerHTML = renderEditCard(p);
+            } else {
+                card.className = 'proposal';
+                card.innerHTML = renderViewCard(p);
+            }
             list.appendChild(card);
         });
+    }
+
+    // Contenuto della card in modalità normale (sola visualizzazione)
+    function renderViewCard(p) {
+        const badge = badgeClassFor(p.status);
+        return `
+            <div class="proposal__head">
+                <div class="avatar">${escapeHTML(initials(p.proposer))}</div>
+                <div class="proposal__meta">
+                    <p class="proposal__name">${escapeHTML(String(p.proposer))}</p>
+                    <p class="proposal__date">
+                        Proposta creata il: ${escapeHTML(creationDate(p) || 'data non disponibile')}
+                    </p>
+                </div>
+                <span class="badge ${badge}">${escapeHTML(String(p.status))}</span>
+            </div>
+            <p class="proposal__desc">${escapeHTML(String(p.description))}</p>
+            <div class="proposal__foot">
+                <button class="btn-edit" onclick="startEdit('${p.id}')">Modifica</button>
+                <button class="btn-delete" onclick="deleteProposal('${p.id}')">Elimina</button>
+            </div>
+        `;
+    }
+
+    // Contenuto della card in modalità modifica (tutti i campi editabili)
+    function renderEditCard(p) {
+        const existingDateType = pick(p, ['dateType', 'tipologia', 'Tipologia']) || 'Singolo';
+        const existingDateDetails = pick(p, ['dateDetails', 'dettaglioData', 'DataDettaglio', 'dataDettaglio']);
+        const isRecurring = existingDateType === 'Ricorrente';
+        const placeholder = isRecurring
+            ? 'es. Ogni terzo venerdì del mese'
+            : 'es. 12 luglio 2026 oppure Data da definire';
+
+        return `
+            <div class="form-group">
+                <label>Propositore / Referente</label>
+                <input type="text" id="edit-proposer-${p.id}" value="${escapeHTML(String(p.proposer))}">
+            </div>
+            <div class="form-group">
+                <label>Descrizione dell'Evento</label>
+                <textarea id="edit-description-${p.id}" rows="4">${escapeHTML(String(p.description))}</textarea>
+            </div>
+            <div class="form-group">
+                <label>Tipologia Evento</label>
+                <div class="form-row-inline">
+                    <select id="edit-dateType-${p.id}" class="select-native" onchange="onEditDateTypeChange('${p.id}')">
+                        <option value="Singolo" ${!isRecurring ? 'selected' : ''}>Singolo</option>
+                        <option value="Ricorrente" ${isRecurring ? 'selected' : ''}>Ricorrente</option>
+                    </select>
+                    <input type="text" id="edit-dateDetails-${p.id}" placeholder="${placeholder}" value="${escapeHTML(String(existingDateDetails))}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Stato Proposta</label>
+                <select id="edit-status-${p.id}" class="select-native">
+                    <option value="Idea" ${p.status === 'Idea' ? 'selected' : ''}>Idea</option>
+                    <option value="Approvata dal consiglio" ${p.status === 'Approvata dal consiglio' ? 'selected' : ''}>Approvata dal consiglio</option>
+                    <option value="Working progress" ${p.status === 'Working progress' ? 'selected' : ''}>Working progress</option>
+                    <option value="Pianificata" ${p.status === 'Pianificata' ? 'selected' : ''}>Pianificata</option>
+                    <option value="Conclusa" ${p.status === 'Conclusa' ? 'selected' : ''}>Conclusa</option>
+                </select>
+            </div>
+            <div class="edit-actions">
+                <button type="button" class="primary" onclick="saveEdit('${p.id}')">Salva</button>
+                <button type="button" class="btn-cancel" onclick="cancelEdit()">Annulla</button>
+            </div>
+        `;
+    }
+
+    // Aggiorna il placeholder del campo dettaglio data quando cambia la tipologia
+    function onEditDateTypeChange(id) {
+        const type = document.getElementById(`edit-dateType-${id}`).value;
+        const input = document.getElementById(`edit-dateDetails-${id}`);
+        input.placeholder = type === 'Ricorrente'
+            ? 'es. Ogni terzo venerdì del mese'
+            : 'es. 12 luglio 2026 oppure Data da definire';
+    }
+
+    // Entra in modalità modifica per una proposta
+    function startEdit(id) {
+        editingId = id;
+        renderProposals();
+    }
+
+    // Annulla la modifica in corso
+    function cancelEdit() {
+        editingId = null;
+        renderProposals();
+    }
+
+    // Salva le modifiche effettuate su una proposta
+    async function saveEdit(id) {
+        const proposerEl = document.getElementById(`edit-proposer-${id}`);
+        const descriptionEl = document.getElementById(`edit-description-${id}`);
+        const dateTypeEl = document.getElementById(`edit-dateType-${id}`);
+        const dateDetailsEl = document.getElementById(`edit-dateDetails-${id}`);
+        const statusEl = document.getElementById(`edit-status-${id}`);
+
+        const proposer = proposerEl.value.trim();
+        const description = descriptionEl.value.trim();
+
+        if (!proposer || !description) {
+            alert('Propositore e descrizione non possono essere vuoti.');
+            return;
+        }
+
+        tableLoading.style.display = 'block';
+        try {
+            await fetch(WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({
+                    action: 'update',
+                    id: id,
+                    proposer: proposer,
+                    description: description,
+                    dateType: dateTypeEl.value,
+                    dateDetails: dateDetailsEl.value.trim(),
+                    status: statusEl.value
+                })
+            });
+            editingId = null;
+            setTimeout(fetchProposals, 500);
+        } catch (error) {
+            console.error(error);
+            tableLoading.style.display = 'none';
+        }
     }
 
     // ---- POST: crea (no-cors) ----
@@ -845,23 +1049,6 @@
             formLoading.style.display = 'none';
         }
     });
-
-    // ---- POST: aggiorna stato (no-cors) ----
-    async function updateStatus(id, newStatus) {
-        tableLoading.style.display = 'block';
-        try {
-            await fetch(WEB_APP_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ action: 'update', id: id, status: newStatus })
-            });
-            setTimeout(fetchProposals, 500);
-        } catch (error) {
-            console.error(error);
-            tableLoading.style.display = 'none';
-        }
-    }
 
     // ---- POST: elimina (no-cors) ----
     async function deleteProposal(id) {
