@@ -755,18 +755,35 @@
         renderProposals();
     });
 
+    // Normalizza un nome propositore per confronti robusti:
+    // rimuove spazi iniziali/finali, spazi doppi e ignora maiuscole/minuscole
+    function normalizeProposer(name) {
+        return String(name || '').trim().replace(/\s+/g, ' ').toLowerCase();
+    }
+
     // Ricostruisce le opzioni del filtro Propositore in base ai dati caricati
     function updateProposerFilterOptions() {
         const select = document.getElementById('proposerFilterSelect');
-        const uniqueNames = Array.from(
-            new Set(proposals.map(p => String(p.proposer || '').trim()).filter(Boolean))
-        ).sort((a, b) => a.localeCompare(b, 'it'));
+
+        // Raggruppa per chiave normalizzata, mantenendo come etichetta
+        // la prima versione "pulita" (trim + spazi singoli) incontrata
+        const byKey = new Map();
+        proposals.forEach(p => {
+            const raw = String(p.proposer || '').trim().replace(/\s+/g, ' ');
+            if (!raw) return;
+            const key = normalizeProposer(raw);
+            if (!byKey.has(key)) byKey.set(key, raw);
+        });
+
+        const entries = Array.from(byKey.entries())
+            .sort((a, b) => a[1].localeCompare(b[1], 'it'));
 
         select.innerHTML = '<option value="Tutte">Tutti i propositori</option>' +
-            uniqueNames.map(name => `<option value="${escapeHTML(name)}">${escapeHTML(name)}</option>`).join('');
+            entries.map(([key, label]) => `<option value="${escapeHTML(key)}">${escapeHTML(label)}</option>`).join('');
 
         // Se il propositore prima selezionato non esiste più tra le opzioni, torna a "Tutte"
-        if (activeProposerFilter !== 'Tutte' && !uniqueNames.includes(activeProposerFilter)) {
+        const validKeys = entries.map(([key]) => key);
+        if (activeProposerFilter !== 'Tutte' && !validKeys.includes(activeProposerFilter)) {
             activeProposerFilter = 'Tutte';
         }
         select.value = activeProposerFilter;
@@ -844,7 +861,7 @@
     function renderProposals() {
         const visible = proposals.filter(p =>
             (activeFilter === 'Tutte' || p.status === activeFilter) &&
-            (activeProposerFilter === 'Tutte' || p.proposer === activeProposerFilter)
+            (activeProposerFilter === 'Tutte' || normalizeProposer(p.proposer) === activeProposerFilter)
         );
 
         counter.textContent = proposals.length === 0
@@ -1020,7 +1037,7 @@
 
         const payload = {
             action: 'create',
-            proposer: document.getElementById('proposer').value,
+            proposer: document.getElementById('proposer').value.trim(),
             description: document.getElementById('description').value,
             dateType: dateType,
             dateDetails: dateDetails,
