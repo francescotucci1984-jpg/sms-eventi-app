@@ -602,15 +602,21 @@
             align-items: center;
             gap: 8px;
         }
-        .detail-recap-desc {
-            border-top: 1px solid var(--line);
-            padding-top: 12px;
-            margin-top: 12px;
-            font-size: 0.9rem;
-            color: var(--muted);
+        .detail-recap-line {
+            margin: 0 0 14px;
+            font-size: 0.95rem;
+            color: var(--ink);
         }
-        .detail-recap-desc p { margin: 0 0 6px; }
-        .detail-recap-desc p:last-child { margin-bottom: 0; }
+        .detail-recap-line:last-child { margin-bottom: 0; }
+        .detail-recap-label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
 
         .chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
         .team-chip {
@@ -634,7 +640,7 @@
             padding: 2px;
         }
         .detail-add-row { display: flex; gap: 8px; }
-        .detail-add-row input { flex: 1; }
+        .detail-add-row input { flex: 1; min-width: 0; }
         .detail-add-row button {
             flex-shrink: 0;
             width: 48px;
@@ -669,11 +675,22 @@
             color: #fff;
         }
         .occ-row {
-            display: grid;
-            grid-template-columns: minmax(0,1fr) minmax(0,0.7fr) minmax(0,1.3fr) auto;
-            gap: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 14px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--line);
         }
+        .occ-row:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .occ-row-top {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .occ-row-top input { flex: 1; min-width: 0; }
+        .occ-row-bottom {
+            display: flex;
+            gap: 8px;
+        }
+        .occ-row-bottom input { flex: 1; min-width: 0; }
         .occ-row input {
             padding: 10px 12px;
             border: 1.5px solid var(--line);
@@ -682,16 +699,16 @@
             font-family: inherit;
             font-size: 0.88rem;
             color: var(--ink);
-            min-width: 0;
         }
         .occ-row input:disabled { opacity: 0.5; cursor: not-allowed; }
         .occ-row-remove {
+            flex-shrink: 0;
             background: none;
             border: 1.5px solid var(--line);
             color: #b23b3b;
             border-radius: var(--radius-sm);
             cursor: pointer;
-            padding: 0 12px;
+            padding: 0 14px;
         }
         .detail-secondary-btn {
             background: none;
@@ -720,8 +737,8 @@
         .checklist-row .checklist-owner { font-size: 0.78rem; color: var(--muted); flex-shrink: 0; }
         .checklist-row .checklist-remove { background: none; border: none; color: #b23b3b; cursor: pointer; font-size: 1rem; flex-shrink: 0; }
         .checklist-add-row { display: flex; gap: 8px; margin-top: 12px; }
-        .checklist-add-row input:first-child { flex: 2; }
-        .checklist-add-row input:last-child { flex: 1; }
+        .checklist-add-row input:first-child { flex: 2; min-width: 0; }
+        .checklist-add-row input:last-child { flex: 1; min-width: 0; }
 
         .detail-save-btn { margin-top: 4px; }
 
@@ -1394,25 +1411,23 @@
         }
 
         const badge = badgeClassFor(p.status);
-        const existingDateType = pick(p, ['dateType', 'tipologia', 'Tipologia']) || 'Singolo';
-        const existingDateDetails = pick(p, ['dateDetails', 'dettaglioData', 'DataDettaglio', 'dataDettaglio']);
 
         detailViewEl.innerHTML = `
             <button class="detail-back" onclick="backToList()">← Torna al registro</button>
 
             <div class="detail-card">
-                <div class="proposal__head" style="margin-bottom:0;">
-                    <div class="avatar">${escapeHTML(initials(p.proposer))}</div>
-                    <div class="proposal__meta">
-                        <p class="proposal__name">${escapeHTML(String(p.proposer))}</p>
-                        <p class="proposal__date">Proposta creata il: ${escapeHTML(creationDate(p) || 'data non disponibile')}</p>
-                    </div>
+                <p class="detail-recap-line">
+                    <span class="detail-recap-label">Descrizione evento</span>
+                    ${escapeHTML(String(p.description))}
+                </p>
+                <p class="detail-recap-line">
+                    <span class="detail-recap-label">Referente</span>
+                    ${escapeHTML(String(p.proposer))}
+                </p>
+                <p class="detail-recap-line">
+                    <span class="detail-recap-label">Stato</span>
                     <span class="badge ${badge}">${escapeHTML(String(p.status))}</span>
-                </div>
-                <div class="detail-recap-desc">
-                    <p><strong>Tipologia:</strong> ${escapeHTML(existingDateType)} — ${escapeHTML(existingDateDetails || 'nessun dettaglio')}</p>
-                    <p>${escapeHTML(String(p.description))}</p>
-                </div>
+                </p>
             </div>
 
             <div class="detail-card">
@@ -1496,10 +1511,14 @@
             ? `<p style="font-size:0.85rem;color:var(--muted);margin:0 0 10px;">Nessuna occorrenza aggiunta.</p>`
             : detailState.occItems.map((o, i) => `
                 <div class="occ-row">
-                    <input type="date" value="${escapeHTML(o.data || '')}" ${disabled} onchange="updateOccField(${i}, 'data', this.value)">
-                    <input type="time" value="${escapeHTML(o.ora || '')}" ${disabled} onchange="updateOccField(${i}, 'ora', this.value)">
-                    <input type="text" value="${escapeHTML(o.luogo || '')}" placeholder="Luogo" ${disabled} onchange="updateOccField(${i}, 'luogo', this.value)">
-                    <button type="button" class="occ-row-remove" ${disabled} onclick="removeOccurrence(${i})">✕</button>
+                    <div class="occ-row-top">
+                        <input type="date" value="${escapeHTML(o.data || '')}" ${disabled} onchange="updateOccField(${i}, 'data', this.value)">
+                        <input type="time" value="${escapeHTML(o.ora || '')}" ${disabled} onchange="updateOccField(${i}, 'ora', this.value)">
+                    </div>
+                    <div class="occ-row-bottom">
+                        <input type="text" value="${escapeHTML(o.luogo || '')}" placeholder="Luogo" ${disabled} onchange="updateOccField(${i}, 'luogo', this.value)">
+                        <button type="button" class="occ-row-remove" ${disabled} onclick="removeOccurrence(${i})">✕</button>
+                    </div>
                 </div>
             `).join('');
     }
