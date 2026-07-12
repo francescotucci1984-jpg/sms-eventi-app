@@ -790,17 +790,18 @@
 
         .checklist-row {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 10px;
-            padding: 9px 0;
+            padding: 10px 0;
             border-bottom: 1px solid var(--line);
         }
         .checklist-row:last-of-type { border-bottom: none; }
-        .checklist-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; flex-shrink: 0; }
-        .checklist-row .checklist-text { flex: 1; font-size: 0.92rem; min-width: 0; word-break: break-word; }
+        .checklist-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; flex-shrink: 0; margin-top: 2px; }
+        .checklist-row .checklist-content { flex: 1; min-width: 0; }
+        .checklist-row .checklist-owner { display: block; font-size: 0.78rem; font-weight: 700; color: var(--primary); margin: 0 0 2px; }
+        .checklist-row .checklist-text { display: block; font-size: 0.92rem; color: var(--ink); word-break: break-word; }
         .checklist-row .checklist-text.done { text-decoration: line-through; color: var(--muted); }
-        .checklist-row .checklist-owner { font-size: 0.78rem; color: var(--muted); flex-shrink: 0; }
-        .checklist-row .checklist-remove { background: none; border: none; color: #b23b3b; cursor: pointer; font-size: 1rem; flex-shrink: 0; }
+        .checklist-row .checklist-remove { background: none; border: none; color: #b23b3b; cursor: pointer; font-size: 1rem; flex-shrink: 0; margin-top: 2px; }
         .checklist-add-row { display: flex; gap: 8px; margin-top: 12px; }
         .checklist-add-row input:first-child { flex: 2; min-width: 0; }
         .checklist-add-row input:last-child { flex: 1; min-width: 0; }
@@ -1636,8 +1637,10 @@
             : detailState.checklist.map((t, i) => `
                 <div class="checklist-row">
                     <input type="checkbox" ${t.fatto ? 'checked' : ''} onchange="toggleChecklistDone(${i})">
-                    <span class="checklist-text ${t.fatto ? 'done' : ''}">${escapeHTML(t.testo)}</span>
-                    <span class="checklist-owner">${escapeHTML(t.responsabile || 'Da assegnare')}</span>
+                    <div class="checklist-content">
+                        <span class="checklist-owner">${escapeHTML(t.responsabile || 'Da assegnare')}</span>
+                        <span class="checklist-text ${t.fatto ? 'done' : ''}">${escapeHTML(t.testo)}</span>
+                    </div>
                     <button type="button" class="checklist-remove" onclick="removeChecklistItem(${i})" aria-label="Rimuovi">✕</button>
                 </div>
             `).join('');
