@@ -27,6 +27,7 @@
             --work-bg: #fdeecd;     --work-fg: #9a6410;
             --plan-bg: #d8efdd;     --plan-fg: #1c6b39;
             --done-bg: #d5dde0;     --done-fg: #3a4c52;
+            --arch-bg: #e6e0d4;     --arch-fg: #7a7050;
 
             --radius: 18px;
             --radius-sm: 12px;
@@ -451,6 +452,7 @@
         .badge-working     { background: var(--work-bg); color: var(--work-fg); }
         .badge-pianificata { background: var(--plan-bg); color: var(--plan-fg); }
         .badge-conclusa    { background: var(--done-bg); color: var(--done-fg); }
+        .badge-archiviata  { background: var(--arch-bg); color: var(--arch-fg); }
 
         .proposal__desc {
             margin: 0 0 16px;
@@ -548,6 +550,7 @@
             transition: all 0.15s;
         }
         .btn-cancel:hover { background: var(--surface-alt); border-color: var(--muted); }
+        .btn-cancel:disabled { opacity: 0.6; cursor: not-allowed; }
 
         /* ---------- Filtro per Propositore ---------- */
         .proposer-filter-row { margin: 2px 0 14px; }
@@ -896,28 +899,17 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="description">Descrizione dell'Evento / Proposta</label>
+                            <label for="description">Descrizione dell'Evento</label>
                             <textarea id="description" rows="4" required placeholder="Racconta la tua proposta, il tipo di attività…"></textarea>
                         </div>
 
                         <div class="form-group">
-                            <label for="dateType">Tipologia Evento / Proposta</label>
+                            <label for="dateType">Tipologia Evento</label>
                             <select id="dateType" class="select-native">
                                 <option value="Singolo">Singolo</option>
                                 <option value="Serie">Serie</option>
                                 <option value="Ricorrente">Ricorrente</option>
                                 <option value="Da definire">Da definire</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="status">Stato Proposta</label>
-                            <select id="status" class="select-native">
-                                <option value="Idea">Idea</option>
-                                <option value="Approvata dal consiglio">Approvata dal consiglio</option>
-                                <option value="Working progress">Working progress</option>
-                                <option value="Pianificata">Pianificata</option>
-                                <option value="Conclusa">Conclusa</option>
                             </select>
                         </div>
 
@@ -937,11 +929,13 @@
 
             <div class="filters" id="filters">
                 <button class="chip active" data-filter="Tutte">Tutte</button>
+                <button class="chip" data-filter="Attive">Attive</button>
                 <button class="chip" data-filter="Idea">Idea</button>
                 <button class="chip" data-filter="Approvata dal consiglio">Approvate</button>
                 <button class="chip" data-filter="Working progress">Working Progress</button>
                 <button class="chip" data-filter="Pianificata">Pianificate</button>
                 <button class="chip" data-filter="Conclusa">Concluse</button>
+                <button class="chip" data-filter="Archiviata">Archiviate</button>
             </div>
 
             <div class="proposer-filter-row">
@@ -1118,6 +1112,7 @@
         if (status === 'Working progress') return 'badge-working';
         if (status === 'Pianificata') return 'badge-pianificata';
         if (status === 'Conclusa') return 'badge-conclusa';
+        if (status === 'Archiviata') return 'badge-archiviata';
         return 'badge-idea';
     }
 
@@ -1129,9 +1124,17 @@
     }
 
     // ---- Rendering ----
+    // Verifica se una proposta soddisfa il filtro di stato selezionato,
+    // gestendo anche "Attive" come categoria composita (tutto tranne Archiviata e Conclusa)
+    function matchesStatusFilter(p) {
+        if (activeFilter === 'Tutte') return true;
+        if (activeFilter === 'Attive') return p.status !== 'Archiviata' && p.status !== 'Conclusa';
+        return p.status === activeFilter;
+    }
+
     function renderProposals() {
         const visible = proposals.filter(p =>
-            (activeFilter === 'Tutte' || p.status === activeFilter) &&
+            matchesStatusFilter(p) &&
             (activeProposerFilter === 'Tutte' || normalizeProposer(p.proposer) === activeProposerFilter)
         );
 
@@ -1189,11 +1192,6 @@
     // Contenuto della card in modalità modifica (tutti i campi editabili)
     function renderEditCard(p) {
         const existingDateType = pick(p, ['dateType', 'tipologia', 'Tipologia']) || 'Singolo';
-        const existingDateDetails = pick(p, ['dateDetails', 'dettaglioData', 'DataDettaglio', 'dataDettaglio']);
-        const isRecurring = existingDateType === 'Ricorrente';
-        const placeholder = isRecurring
-            ? 'es. Ogni terzo venerdì del mese'
-            : 'es. 12 luglio 2026 oppure Data da definire';
 
         return `
             <div class="form-group">
@@ -1206,15 +1204,12 @@
             </div>
             <div class="form-group">
                 <label>Tipologia Evento</label>
-                <div class="form-row-inline">
-                    <select id="edit-dateType-${p.id}" class="select-native" onchange="onEditDateTypeChange('${p.id}')">
-                        <option value="Singolo" ${existingDateType === 'Singolo' ? 'selected' : ''}>Singolo</option>
-                        <option value="Serie" ${existingDateType === 'Serie' ? 'selected' : ''}>Serie</option>
-                        <option value="Ricorrente" ${existingDateType === 'Ricorrente' ? 'selected' : ''}>Ricorrente</option>
-                        <option value="Da definire" ${existingDateType === 'Da definire' ? 'selected' : ''}>Da definire</option>
-                    </select>
-                    <input type="text" id="edit-dateDetails-${p.id}" placeholder="${placeholder}" value="${escapeHTML(String(existingDateDetails))}">
-                </div>
+                <select id="edit-dateType-${p.id}" class="select-native">
+                    <option value="Singolo" ${existingDateType === 'Singolo' ? 'selected' : ''}>Singolo</option>
+                    <option value="Serie" ${existingDateType === 'Serie' ? 'selected' : ''}>Serie</option>
+                    <option value="Ricorrente" ${existingDateType === 'Ricorrente' ? 'selected' : ''}>Ricorrente</option>
+                    <option value="Da definire" ${existingDateType === 'Da definire' ? 'selected' : ''}>Da definire</option>
+                </select>
             </div>
             <div class="form-group">
                 <label>Stato Proposta</label>
@@ -1224,22 +1219,15 @@
                     <option value="Working progress" ${p.status === 'Working progress' ? 'selected' : ''}>Working progress</option>
                     <option value="Pianificata" ${p.status === 'Pianificata' ? 'selected' : ''}>Pianificata</option>
                     <option value="Conclusa" ${p.status === 'Conclusa' ? 'selected' : ''}>Conclusa</option>
+                    <option value="Archiviata" ${p.status === 'Archiviata' ? 'selected' : ''}>Archiviata</option>
                 </select>
             </div>
             <div class="edit-actions">
-                <button type="button" class="primary" onclick="saveEdit('${p.id}')">Salva</button>
-                <button type="button" class="btn-cancel" onclick="cancelEdit()">Annulla</button>
+                <button type="button" class="primary" id="edit-save-btn-${p.id}" onclick="saveEdit('${p.id}')">Salva</button>
+                <button type="button" class="btn-cancel" id="edit-cancel-btn-${p.id}" onclick="cancelEdit()">Annulla</button>
             </div>
+            <div id="edit-loading-${p.id}" class="loading-overlay" style="display:none;"><span class="spinner"></span>Salvataggio in corso…</div>
         `;
-    }
-
-    // Aggiorna il placeholder del campo dettaglio data quando cambia la tipologia
-    function onEditDateTypeChange(id) {
-        const type = document.getElementById(`edit-dateType-${id}`).value;
-        const input = document.getElementById(`edit-dateDetails-${id}`);
-        input.placeholder = type === 'Ricorrente'
-            ? 'es. Ogni terzo venerdì del mese'
-            : 'es. 12 luglio 2026 oppure Data da definire';
     }
 
     // Entra in modalità modifica per una proposta
@@ -1259,7 +1247,6 @@
         const proposerEl = document.getElementById(`edit-proposer-${id}`);
         const descriptionEl = document.getElementById(`edit-description-${id}`);
         const dateTypeEl = document.getElementById(`edit-dateType-${id}`);
-        const dateDetailsEl = document.getElementById(`edit-dateDetails-${id}`);
         const statusEl = document.getElementById(`edit-status-${id}`);
 
         const proposer = proposerEl.value.trim();
@@ -1270,7 +1257,13 @@
             return;
         }
 
-        tableLoading.style.display = 'block';
+        const saveBtn = document.getElementById(`edit-save-btn-${id}`);
+        const cancelBtn = document.getElementById(`edit-cancel-btn-${id}`);
+        const loading = document.getElementById(`edit-loading-${id}`);
+        if (saveBtn) saveBtn.disabled = true;
+        if (cancelBtn) cancelBtn.disabled = true;
+        if (loading) loading.style.display = 'block';
+
         try {
             await fetch(WEB_APP_URL, {
                 method: 'POST',
@@ -1282,7 +1275,6 @@
                     proposer: proposer,
                     description: description,
                     dateType: dateTypeEl.value,
-                    dateDetails: dateDetailsEl.value.trim(),
                     status: statusEl.value
                 })
             });
@@ -1290,7 +1282,9 @@
             setTimeout(fetchProposals, 500);
         } catch (error) {
             console.error(error);
-            tableLoading.style.display = 'none';
+            if (loading) loading.style.display = 'none';
+            if (saveBtn) saveBtn.disabled = false;
+            if (cancelBtn) cancelBtn.disabled = false;
         }
     }
 
@@ -1306,7 +1300,7 @@
             description: document.getElementById('description').value,
             dateType: document.getElementById('dateType').value,
             dateDetails: '',
-            status: document.getElementById('status').value
+            status: 'Idea'
         };
 
         try {
